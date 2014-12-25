@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="newsTitleColorsArray">
+        <item>#cc0000</item>
+        <item>#ff8800</item>
+        <item>#669900</item>
+        <item>#9933cc</item>
+        <item>#0099cc</item>
+    </array>
+    <array name="newsHighlightColorsArray">
+        <item>#ff4444</item>
+        <item>#ffbb33</item>
+        <item>#99cc00</item>
+        <item>#aa66cc</item>
+        <item>#33b5e5</item>
+    </array>
+</resources>
