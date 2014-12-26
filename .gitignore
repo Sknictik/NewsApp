@@ -1,9 +1,11 @@
-/.gradle
-/.idea
-/build
-/design_screenshots
-*.iml
-*.properties
-gradlew
-gradlew.bat
+# Gradle 
+.gradle
+build
 
+#Idea
+.idea
+*.iml
+
+#Android
+local.properties
+design_screenshots

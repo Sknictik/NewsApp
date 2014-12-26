@@ -1,4 +1,4 @@
-package android_news.news;
+package noveo.school.android.newsapp.fragment;
 
 
 import android.app.ActionBar;
@@ -15,6 +15,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android_news.newsapp.R;
+import noveo.school.android.newsapp.view.ArrayAdapterForNavigationDrawer;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -85,6 +87,7 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
+
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -101,12 +104,13 @@ public class NavigationDrawerFragment extends Fragment {
         };
 
 
-        mDrawerListView.setAdapter(new ArrayAdapterForNewsTitles (
+        mDrawerListView.setAdapter(new ArrayAdapterForNavigationDrawer(
                 getActionBar().getThemedContext(),
                 R.layout.drawer_item_layout,
                 R.id.news_topic_title,
                 titles,
-                this.getResources().getIntArray((R.array.newsTitleColorsArray)),
+                this.getResources().getIntArray((R.array.newsTitleBarColorsArray)),
+                this.getResources().getIntArray((R.array.newsHighlightColorsArray)),
                 R.id.news_topic_color));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -209,7 +213,7 @@ public class NavigationDrawerFragment extends Fragment {
         //Set title color for each news topic
         getActionBar().setBackgroundDrawable(
                 new ColorDrawable(this.getResources().getIntArray(
-                        (R.array.newsTitleColorsArray))[position]));
+                        (R.array.newsTitleBarColorsArray))[position]));
     }
 
     @Override

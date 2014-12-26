@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Главные новости</string>
+    <string name="app_name">Андроид новости</string>
     <string name="title_section1">Главные новости</string>
     <string name="title_section2">Политика</string>
     <string name="title_section3">Технологии</string>

@@ -1,4 +1,4 @@
-package android_news.news;
+package android_news.newsapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

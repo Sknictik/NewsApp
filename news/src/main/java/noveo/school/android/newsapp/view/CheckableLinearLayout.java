@@ -1,6 +1,9 @@
-package android_news.news;
+package noveo.school.android.newsapp.view;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
@@ -12,6 +15,8 @@ import android.widget.LinearLayout;
  */
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
     private CheckedTextView _checkbox;
+
+    private int highlightColor;
 
     public CheckableLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,13 +37,30 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
 
     @Override
     public boolean isChecked() {
-        return _checkbox != null ? _checkbox.isChecked() : false;
+        return _checkbox != null && _checkbox.isChecked();
+    }
+
+    public void setHighlightColor(int highlightColor) {
+        this.highlightColor = highlightColor;
     }
 
     @Override
     public void setChecked(boolean checked) {
-        if (_checkbox != null) {
-            _checkbox.setChecked(checked);
+        if (checked) {
+            _checkbox.setBackgroundColor(highlightColor);
+        } else {
+            StateListDrawable states = new StateListDrawable();
+            states.addState(new int[] {android.R.attr.state_pressed},
+                    new ColorDrawable(highlightColor));
+            states.addState(new int[] {android.R.attr.state_checked},
+                    new ColorDrawable(highlightColor));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                _checkbox.setBackground(states);
+            }
+            else {
+                _checkbox.setBackgroundDrawable(states);
+            }
+
         }
     }
 

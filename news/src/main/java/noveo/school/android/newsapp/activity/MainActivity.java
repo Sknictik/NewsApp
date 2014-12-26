@@ -1,4 +1,4 @@
-package android_news.news;
+package noveo.school.android.newsapp.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -7,6 +7,8 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
+import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
+import android_news.newsapp.R;
 
 
 public class MainActivity extends Activity
