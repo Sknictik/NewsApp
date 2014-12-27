@@ -7,8 +7,8 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
-import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
 
 
 public class MainActivity extends Activity

@@ -109,7 +109,7 @@ public class NavigationDrawerFragment extends Fragment {
                 R.layout.drawer_item_layout,
                 R.id.news_topic_title,
                 titles,
-                this.getResources().getIntArray((R.array.newsTitleBarColorsArray)),
+                this.getResources().getIntArray((R.array.newsActionBarColorsArray)),
                 this.getResources().getIntArray((R.array.newsHighlightColorsArray)),
                 R.id.news_topic_color));
 
@@ -210,10 +210,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
-        //Set title color for each news topic
-        getActionBar().setBackgroundDrawable(
-                new ColorDrawable(this.getResources().getIntArray(
-                        (R.array.newsTitleBarColorsArray))[position]));
+
     }
 
     @Override
@@ -253,6 +250,11 @@ public class NavigationDrawerFragment extends Fragment {
             inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
+        //Set actionbar color for each news topic
+        getActionBar().setBackgroundDrawable(
+                new ColorDrawable(this.getResources().getIntArray(
+                        (R.array.newsActionBarColorsArray))[mCurrentSelectedPosition]));
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 

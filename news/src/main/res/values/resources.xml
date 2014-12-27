@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="newsTitleBarColorsArray">
+    <array name="newsActionBarColorsArray">
         <item>#cc0000</item>
         <item>#ff8800</item>
         <item>#669900</item>
