@@ -1,5 +1,4 @@
 package noveo.school.android.newsapp.view;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
                                    Drawable[] newsImages,
                                    String[] newsTexts,
                                    Drawable faveIcon
-                                           ) {
+    ) {
         super(context, layoutResource, R.id.newsTextView, newsTexts);
 
         mInflater = (LayoutInflater) context.getSystemService(
@@ -50,15 +49,15 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
             convertView = mInflater.inflate(layoutId, null);
         }
 
-        TextView dateTV = (TextView)convertView.findViewById(R.id.dateTextView);
+        TextView dateTV = (TextView) convertView.findViewById(R.id.dateTextView);
         dateTV.setText(mDates[position]);
 
-        TextView newsView = (TextView)convertView.findViewById(R.id.newsTextView);
+        TextView newsView = (TextView) convertView.findViewById(R.id.newsTextView);
         newsView.setCompoundDrawables(mNewsImages[position], null, null, null);
         newsView.setText(mNewsTexts[position]);
 
         if (faveIcon != null) {
-            ImageView faveIV = (ImageView)convertView.findViewById(R.id.faveIcon);
+            ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
             faveIV.setImageDrawable(faveIcon);
         }
 
