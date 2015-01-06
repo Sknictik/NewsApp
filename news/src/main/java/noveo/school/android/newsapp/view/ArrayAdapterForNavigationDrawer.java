@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android_news.newsapp.R;
 
 /**
  * Created by Arseniy Nazarov on 25.12.2014.
@@ -17,14 +18,12 @@ public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
     private int mViewResourceId;
     private int mTextViewResourceId;
-    private int mImageViewResourceId;
     private int[] highlightColors;
     private int[] titleColors;
     private String[] mTitles;
 
     public ArrayAdapterForNavigationDrawer(Context context, int resource, int textViewResourceId,
-                                           String[] titles, int[] titleColors, int[] highlightColors,
-                                           int imageViewResourceId) {
+                                           String[] titles, int[] titleColors, int[] highlightColors) {
         super(context, resource, textViewResourceId, titles);
 
         mInflater = (LayoutInflater) context.getSystemService(
@@ -32,7 +31,6 @@ public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
         mViewResourceId = resource;
         mTextViewResourceId = textViewResourceId;
-        mImageViewResourceId = imageViewResourceId;
         this.highlightColors = highlightColors;
         this.titleColors = titleColors;
         mTitles = titles;
@@ -48,17 +46,10 @@ public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
         TextView tv = (TextView)convertView.findViewById(mTextViewResourceId);
         tv.setText(mTitles[position]);
 
-
-        switch(position) {
-            case 0: {((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]); break;}
-            case 1: {((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]); break;}
-            case 2: {((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]); break;}
-            case 3: {((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]); break;}
-            case 4: {((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]); break;}
-        }
+        ((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]);
 
 
-        ImageView iv = (ImageView)convertView.findViewById(mImageViewResourceId);
+        ImageView iv = (ImageView)convertView.findViewById(R.id.news_topic_color);
         iv.setBackgroundColor(titleColors[position]);
 
 

@@ -15,4 +15,6 @@
         <item>#33b5e5</item>
     </array>
 
+    <integer name="news_preview_max_length">100</integer>
+
 </resources>

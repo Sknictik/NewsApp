@@ -110,8 +110,7 @@ public class NavigationDrawerFragment extends Fragment {
                 R.id.news_topic_title,
                 titles,
                 this.getResources().getIntArray((R.array.newsActionBarColorsArray)),
-                this.getResources().getIntArray((R.array.newsHighlightColorsArray)),
-                R.id.news_topic_color));
+                this.getResources().getIntArray((R.array.newsHighlightColorsArray))));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
@@ -247,7 +246,7 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.main, menu);
             showGlobalContextActionBar();
         }
         //Set actionbar color for each news topic
