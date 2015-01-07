@@ -4,15 +4,16 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
+import noveo.school.android.newsapp.view.ArrayAdapterForNewsGrid;
 
 
 public class MainActivity extends Activity
@@ -42,6 +43,16 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
+
+    @Override
+    public void onBackPressed() {
+        if(mNavigationDrawerFragment.isDrawerOpen()){
+            mNavigationDrawerFragment.closeDrawer(Gravity.LEFT);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -137,8 +148,15 @@ public class MainActivity extends Activity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_news_grid, container, false);
             GridView gridview = (GridView) rootView;
-            gridview.setAdapter(new ArrayAdapter(getActivity(), R.layout.news_entry,
-                    R.id.newsTextView, new String[]{"Новость 1", "Новость 2", "Новость 3"}));
+            gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
+                    new String[] {"date 1", "date 2", "date 3"},
+                    new Drawable[] {getResources().getDrawable(R.drawable.ic_stub_loading),
+                            getResources().getDrawable(R.drawable.ic_stub_loading),
+                            getResources().getDrawable(R.drawable.ic_stub_loading)},
+                    new String[]{"Новость 1", "Новость 2", "Новость 3"},
+                    new Boolean[]{true, false, true},
+                    getResources().getDrawable(R.drawable.ic_star_red),
+                    getResources().getColor(R.color.main_news_color)));
 
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

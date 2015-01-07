@@ -23,12 +23,16 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
     private Drawable[] mNewsImages;
     private String[] mNewsTexts;
     private Drawable faveIcon = null;
+    private Boolean[] isFavourite;
+    private int styleColor;
 
     public ArrayAdapterForNewsGrid(Context context, int layoutResource,
                                    String[] dates,
                                    Drawable[] newsImages,
                                    String[] newsTexts,
-                                   Drawable faveIcon
+                                   Boolean[] isFavourite,
+                                   Drawable faveIcon,
+                                   int color
     ) {
         super(context, layoutResource, R.id.newsTextView, newsTexts);
 
@@ -40,6 +44,8 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
         mNewsImages = newsImages;
         mDates = dates;
         this.faveIcon = faveIcon;
+        this.isFavourite = isFavourite;
+        this.styleColor = color;
     }
 
     @Override
@@ -51,12 +57,15 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
 
         TextView dateTV = (TextView) convertView.findViewById(R.id.dateTextView);
         dateTV.setText(mDates[position]);
+        dateTV.setTextColor(styleColor);
 
-        TextView newsView = (TextView) convertView.findViewById(R.id.newsTextView);
-        newsView.setCompoundDrawables(mNewsImages[position], null, null, null);
-        newsView.setText(mNewsTexts[position]);
+        TextView newsTV = (TextView) convertView.findViewById(R.id.newsTextView);
+        newsTV.setText(mNewsTexts[position]);
 
-        if (faveIcon != null) {
+        ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
+        newsIV.setImageDrawable(mNewsImages[position]);
+
+        if (isFavourite[position]) {
             ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
             faveIV.setImageDrawable(faveIcon);
         }

@@ -2,11 +2,12 @@
              android:id="@+id/news_grid"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:numColumns="auto_fit"
+             android:numColumns="1"
              android:verticalSpacing="@dimen/news_entry_horizontral_vertical_spacing"
              android:horizontalSpacing="@dimen/news_entry_horizontral_vertical_spacing"
+             android:padding="@dimen/news_cell_padding"
              android:stretchMode="columnWidth"
-             android:columnWidth="90dp"
+             android:background="@android:color/white"
              android:gravity="center">
 
 </GridView>

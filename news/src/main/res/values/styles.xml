@@ -6,7 +6,8 @@
     </style>
 
     <style name="ActionBarNewsStyle" parent="android:Widget.ActionBar">
-        <item name="android:background">#cc0000</item>
+        <item name="android:background">@color/main_news_color</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>
