@@ -32,7 +32,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
                                    String[] newsTexts,
                                    Boolean[] isFavourite,
                                    Drawable faveIcon,
-                                   int color
+                                   int topicColor
     ) {
         super(context, layoutResource, R.id.newsTextView, newsTexts);
 
@@ -45,7 +45,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
         mDates = dates;
         this.faveIcon = faveIcon;
         this.isFavourite = isFavourite;
-        this.styleColor = color;
+        this.styleColor = topicColor;
     }
 
     @Override

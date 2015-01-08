@@ -13,7 +13,15 @@ import android.widget.GridView;
 import android.widget.Toast;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
+import noveo.school.android.newsapp.retrofit.entities.NewsEntry;
+import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.ArrayAdapterForNewsGrid;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity
@@ -29,6 +37,18 @@ public class MainActivity extends Activity
      */
     private CharSequence mTitle;
 
+    private enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
+
+    /**
+     * Used to store current topic
+     */
+    private NewsTopic topic;
+
+    /**
+     * Used to store the last loaded news.
+     */
+    private List<NewsEntry> newsList = new ArrayList<NewsEntry>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +62,35 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        //If news list is empty load from site
+        if (newsList == null) {
+            RestClient.get().getAllNews(new Callback<NewsEntry[]>() {
+                @Override
+                public void success(NewsEntry[] news, Response response) {
+                    for (NewsEntry entry : news) {
+                        String[] topics = entry.getTopics();
+                        for (String aTopic : topics) {
+                            if (topic.name().toLowerCase().equals(aTopic)) {
+                                newsList.add(entry);
+                                break;
+                            }
+                        }
+                    }
+                /*Log.i("AppAPP", news[0].getId());
+                Log.i("AppAPP", news[0].getTitle());*/
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Toast.makeText(getApplicationContext(),
+                            "Не удается получить новости",
+                            Toast.LENGTH_LONG).show();
+                    error.printStackTrace();
+                }
+            });
+        }
+
     }
 
     @Override
@@ -64,21 +113,22 @@ public class MainActivity extends Activity
     }
 
     public void onSectionAttached(int number) {
+        topic = NewsTopic.values()[number];
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.title_main);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_politics);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.title_tech);
                 break;
             case 4:
-                mTitle = getString(R.string.title_section4);
+                mTitle = getString(R.string.title_culture);
                 break;
             case 5:
-                mTitle = getString(R.string.title_section5);
+                mTitle = getString(R.string.title_sports);
                 break;
         }
     }

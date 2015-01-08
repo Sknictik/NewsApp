@@ -96,11 +96,11 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         String[] titles = new String[]{
-                getString(R.string.title_section1),
-                getString(R.string.title_section2),
-                getString(R.string.title_section3),
-                getString(R.string.title_section4),
-                getString(R.string.title_section5)
+                getString(R.string.title_main),
+                getString(R.string.title_politics),
+                getString(R.string.title_tech),
+                getString(R.string.title_culture),
+                getString(R.string.title_sports)
         };
 
 

@@ -2,11 +2,11 @@
 <resources>
 
     <string name="app_name">Андроид новости</string>
-    <string name="title_section1">Главные новости</string>
-    <string name="title_section2">Политика</string>
-    <string name="title_section3">Технологии</string>
-    <string name="title_section4">Культура</string>
-    <string name="title_section5">Спорт</string>
+    <string name="title_main">Главные новости</string>
+    <string name="title_politics">Политика</string>
+    <string name="title_tech">Технологии</string>
+    <string name="title_culture">Культура</string>
+    <string name="title_sports">Спорт</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_refresh">Обновить</string>
