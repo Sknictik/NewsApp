@@ -4,6 +4,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -13,7 +15,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
-import noveo.school.android.newsapp.retrofit.entities.NewsEntry;
+import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.ArrayAdapterForNewsGrid;
 import retrofit.Callback;
@@ -21,6 +23,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -40,14 +43,14 @@ public class MainActivity extends Activity
     private enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
 
     /**
-     * Used to store current topic
+     * Used to store current heading
      */
-    private NewsTopic topic;
+    private static NewsTopic heading;
 
     /**
-     * Used to store the last loaded news.
+     * Used to store the last loaded news for current heading.
      */
-    private List<NewsEntry> newsList = new ArrayList<NewsEntry>();
+    private static List<ShortNewsEntry> newsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,33 +66,7 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        //If news list is empty load from site
-        if (newsList == null) {
-            RestClient.get().getAllNews(new Callback<NewsEntry[]>() {
-                @Override
-                public void success(NewsEntry[] news, Response response) {
-                    for (NewsEntry entry : news) {
-                        String[] topics = entry.getTopics();
-                        for (String aTopic : topics) {
-                            if (topic.name().toLowerCase().equals(aTopic)) {
-                                newsList.add(entry);
-                                break;
-                            }
-                        }
-                    }
-                /*Log.i("AppAPP", news[0].getId());
-                Log.i("AppAPP", news[0].getTitle());*/
-                }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    Toast.makeText(getApplicationContext(),
-                            "Не удается получить новости",
-                            Toast.LENGTH_LONG).show();
-                    error.printStackTrace();
-                }
-            });
-        }
 
     }
 
@@ -113,7 +90,7 @@ public class MainActivity extends Activity
     }
 
     public void onSectionAttached(int number) {
-        topic = NewsTopic.values()[number];
+        heading = NewsTopic.values()[number - 1];
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_main);
@@ -197,16 +174,50 @@ public class MainActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_news_grid, container, false);
-            GridView gridview = (GridView) rootView;
-            gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
-                    new String[] {"date 1", "date 2", "date 3"},
-                    new Drawable[] {getResources().getDrawable(R.drawable.ic_stub_loading),
-                            getResources().getDrawable(R.drawable.ic_stub_loading),
-                            getResources().getDrawable(R.drawable.ic_stub_loading)},
-                    new String[]{"Новость 1", "Новость 2", "Новость 3"},
-                    new Boolean[]{true, false, true},
-                    getResources().getDrawable(R.drawable.ic_star_red),
-                    getResources().getColor(R.color.main_news_color)));
+            final GridView gridview = (GridView) rootView;
+
+            //If news list is empty - load from site
+            if (newsList.isEmpty()) {
+                RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
+                    @Override
+                    public void success(ShortNewsEntry[] news, Response response) {
+                        newsList = Arrays.asList(news);
+                        List<ShortNewsEntry> topicNews = new ArrayList<ShortNewsEntry>();
+
+                        for (ShortNewsEntry entry : newsList) {
+                            String[] topics = entry.getTopics();
+                            for (String topic : topics) {
+                                if (heading.name().toLowerCase().equals(topic)) {
+                                    topicNews.add(entry);
+                                    break;
+                                }
+                            }
+                        }
+
+                        Resources res = getResources();
+                        TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
+
+                        TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
+
+                        Drawable faveIcon = icons.getDrawable(heading.ordinal());
+                        int topicColor = colors.getColor(heading.ordinal(), 0);
+
+                        gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
+                                topicNews,
+                                new Boolean[]{true, false, true},
+                                faveIcon,
+                                topicColor));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(getActivity(),
+                                "Не удается получить новости",
+                                Toast.LENGTH_LONG).show();
+                        error.printStackTrace();
+                    }
+                });
+            }
 
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

@@ -11,7 +11,6 @@ import retrofit.converter.GsonConverter;
 public class RestClient {
 
     private static NewsAPI REST_CLIENT;
-    private static String ROOT = "http://androidtraining.noveogroup.com/news/";
 
     static {
         setupRestClient();
@@ -29,6 +28,7 @@ public class RestClient {
                 .setDateFormat("dd MMM yyyy HH:mm:ss Z")
                 .create();
 
+        String ROOT = "http://androidtraining.noveogroup.com/news/";
         RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setEndpoint(ROOT)
                 .setConverter(new GsonConverter(gson))

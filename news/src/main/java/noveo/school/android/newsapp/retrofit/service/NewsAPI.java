@@ -1,6 +1,6 @@
 package noveo.school.android.newsapp.retrofit.service;
 
-import noveo.school.android.newsapp.retrofit.entities.NewsEntry;
+import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import retrofit.Callback;
 import retrofit.http.GET;
 import retrofit.http.Query;
@@ -10,8 +10,8 @@ import retrofit.http.Query;
  */
 public interface NewsAPI {
     @GET("/getAll")
-    void getAllNews(Callback<NewsEntry[]> news);
+    void getAllNews(Callback<ShortNewsEntry[]> news);
 
     @GET("/getById")
-    void getNewsById(@Query("id") String id, Callback<NewsEntry> news);
+    void getNewsById(@Query("id") String id, Callback<ShortNewsEntry> news);
 }

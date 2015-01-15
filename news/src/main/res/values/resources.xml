@@ -14,7 +14,13 @@
         <item>#aa66cc</item>
         <item>#33b5e5</item>
     </array>
-
+    <array name="faveIcons">
+        <item>@drawable/ic_star_red</item>
+        <item>@drawable/ic_star_orange</item>
+        <item>@drawable/ic_star_green</item>
+        <item>@drawable/ic_star_purple</item>
+        <item>@drawable/ic_star_blue</item>
+    </array>
     <integer name="news_preview_max_length">100</integer>
 
 </resources>
