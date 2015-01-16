@@ -182,31 +182,7 @@ public class MainActivity extends Activity
                     @Override
                     public void success(ShortNewsEntry[] news, Response response) {
                         newsList = Arrays.asList(news);
-                        List<ShortNewsEntry> topicNews = new ArrayList<ShortNewsEntry>();
-
-                        for (ShortNewsEntry entry : newsList) {
-                            String[] topics = entry.getTopics();
-                            for (String topic : topics) {
-                                if (heading.name().toLowerCase().equals(topic)) {
-                                    topicNews.add(entry);
-                                    break;
-                                }
-                            }
-                        }
-
-                        Resources res = getResources();
-                        TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
-
-                        TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
-
-                        Drawable faveIcon = icons.getDrawable(heading.ordinal());
-                        int topicColor = colors.getColor(heading.ordinal(), 0);
-
-                        gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
-                                topicNews,
-                                new Boolean[]{true, false, true},
-                                faveIcon,
-                                topicColor));
+                        fillNewsGrid(gridview);
                     }
 
                     @Override
@@ -218,14 +194,47 @@ public class MainActivity extends Activity
                     }
                 });
             }
+            else {
+                fillNewsGrid(gridview);
+            }
+
+            return rootView;
+        }
+
+
+        private void fillNewsGrid(GridView gridview) {
+            List<ShortNewsEntry> topicNews = new ArrayList<>();
+
+            for (ShortNewsEntry entry : newsList) {
+                String[] topics = entry.getTopics();
+                for (String topic : topics) {
+                    if (heading.name().toLowerCase().equals(topic)) {
+                        topicNews.add(entry);
+                        break;
+                    }
+                }
+            }
+
+            Resources res = getResources();
+            TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
+
+            TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
+
+            Drawable faveIcon = icons.getDrawable(heading.ordinal());
+            int topicColor = colors.getColor(heading.ordinal(), 0);
+
+            gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
+                    topicNews,
+                    faveIcon,
+                    topicColor));
 
             gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                     Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
                 }
             });
-            return rootView;
         }
+
 
         @Override
         public void onAttach(Activity activity) {

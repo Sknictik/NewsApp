@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
+import com.squareup.picasso.Picasso;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 
 import java.text.Format;
@@ -20,25 +21,24 @@ import java.util.List;
  * */
 
 
-public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
+public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
+
+    private final Format TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
 
     LayoutInflater mInflater = null;
 
     private int layoutId;
     private List<ShortNewsEntry> news;
     private Drawable faveIcon = null;
-    private Boolean[] isFavourite;
     private int styleColor;
-
-    private final Format timeFormat = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
+    private Context context;
 
     public ArrayAdapterForNewsGrid(Context context, int layoutResource,
                                    List<ShortNewsEntry> news,
-                                   Boolean[] isFavourite,
                                    Drawable faveIcon,
                                    int topicColor
     ) {
-        super(context, layoutResource, R.id.newsTextView, new String[] {"1", "2"});
+        super(context, layoutResource, news);
 
         mInflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
@@ -46,8 +46,8 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
         layoutId = layoutResource;
         this.news = news;
         this.faveIcon = faveIcon;
-        this.isFavourite = isFavourite;
         this.styleColor = topicColor;
+        this.context = context;
     }
 
     @Override
@@ -61,19 +61,28 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<String> {
 
         ShortNewsEntry newsEntry = news.get(position);
 
-        String stringTime = timeFormat.format(newsEntry.getPubDate());
+        String stringTime = TIME_FORMAT.format(newsEntry.getPubDate());
         dateTV.setText(stringTime);
         dateTV.setTextColor(styleColor);
 
         TextView newsTV = (TextView) convertView.findViewById(R.id.newsTextView);
         newsTV.setText(newsEntry.getTitle());
-
-        //TODO load image with picasso
+        String imageUrl = newsEntry.getImage();
 
         ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
-        //newsIV.setImageDrawable(mNewsImages[position]);
 
-        if (isFavourite[position]) {
+        if (imageUrl != null) {
+            Picasso.with(context)
+                    .load(newsEntry.getImage())
+                    .placeholder(R.drawable.ic_stub_loading)
+                    .error(R.drawable.ic_stub_error)
+                    .into(newsIV);
+            newsIV.setVisibility(View.VISIBLE);
+        }
+        else {
+            newsIV.setVisibility(View.GONE);
+        }
+        if (newsEntry.isFavourite()) {
             ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
             faveIV.setImageDrawable(faveIcon);
         }

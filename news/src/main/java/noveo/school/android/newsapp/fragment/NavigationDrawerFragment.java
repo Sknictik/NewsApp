@@ -269,7 +269,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (item.getItemId() == R.id.action_example) {
             getActionBar().setTitle(R.string.loading_title);
-            //Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
             return true;
         }
 

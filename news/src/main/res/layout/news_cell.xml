@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/news_row_height"
+                android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
@@ -13,7 +13,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="@dimen/news_row_height">
 
         <RelativeLayout
                     android:id="@+id/miscLayout"
@@ -26,7 +26,6 @@
                         android:id="@+id/dateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Small Text"
                         android:textStyle="bold"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:layout_marginLeft="@dimen/news_cell_image_horizontal_margin"
@@ -51,24 +50,26 @@
 
             <ImageView
                     android:id="@+id/newsImageView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/zero"
+                    android:layout_weight="0.25"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_stub_loading"
                     android:layout_marginBottom="@dimen/news_cell_image_vertical_margin"
                     android:layout_marginTop="@dimen/news_cell_image_vertical_margin"
                     android:layout_marginLeft="@dimen/news_cell_image_horizontal_margin"
                     android:layout_marginRight="@dimen/news_cell_image_horizontal_margin"
                     android:background="@color/white"
-                    android:layout_gravity="top"/>
+                    android:layout_gravity="top"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_stub_loading"
+                    android:scaleType="fitXY"/>
 
             <TextView
                     android:id="@+id/newsTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
-                    android:text="NEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWS"
+                    android:layout_weight="0.75"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black"
-                    android:maxLength="@integer/news_preview_max_length"
                     android:ellipsize="marquee"/>
 
         </LinearLayout>

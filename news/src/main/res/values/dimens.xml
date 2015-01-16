@@ -1,7 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">5dp</dimen>
-    <dimen name="activity_vertical_margin">5dp</dimen>
+    <dimen name="activity_horizontal_margin">8dp</dimen>
+    <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="news_row_height">120dp</dimen>
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
@@ -13,9 +13,9 @@
 
     <!--News cell dimensions-->
     <dimen name="news_entry_height">120dp</dimen>
-    <dimen name="news_entry_horizontral_vertical_spacing">10dp</dimen>
+    <dimen name="news_entry_horizontral_vertical_spacing">8dp</dimen>
     <dimen name="news_cell_image_vertical_margin">8dp</dimen>
     <dimen name="news_cell_image_horizontal_margin">8dp</dimen>
     <dimen name="news_cell_date_horizontal_margin">8dp</dimen>
-    <dimen name="news_cell_padding">10dp</dimen>
+    <dimen name="news_cell_padding">8dp</dimen>
 </resources>
