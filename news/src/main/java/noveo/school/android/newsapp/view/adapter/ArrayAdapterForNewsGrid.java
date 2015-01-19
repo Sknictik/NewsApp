@@ -1,4 +1,4 @@
-package noveo.school.android.newsapp.view;
+package noveo.school.android.newsapp.view.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

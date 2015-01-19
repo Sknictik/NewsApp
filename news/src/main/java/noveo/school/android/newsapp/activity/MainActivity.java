@@ -4,9 +4,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
@@ -17,7 +20,8 @@ import android_news.newsapp.R;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
-import noveo.school.android.newsapp.view.ArrayAdapterForNewsGrid;
+import noveo.school.android.newsapp.view.ToastDialog;
+import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -178,27 +182,40 @@ public class MainActivity extends Activity
 
             //If news list is empty - load from site
             if (newsList.isEmpty()) {
-                RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
-                    @Override
-                    public void success(ShortNewsEntry[] news, Response response) {
-                        newsList = Arrays.asList(news);
-                        fillNewsGrid(gridview);
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Toast.makeText(getActivity(),
-                                "Не удается получить новости",
-                                Toast.LENGTH_LONG).show();
-                        error.printStackTrace();
-                    }
-                });
+                downloadNewsInGrid(gridview);
             }
             else {
                 fillNewsGrid(gridview);
             }
 
             return rootView;
+        }
+
+
+        private void downloadNewsInGrid(final GridView gridview) {
+            NetworkInfo mWifi = ((ConnectivityManager) getActivity().
+                    getSystemService(Context.CONNECTIVITY_SERVICE)).
+                    getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+
+            if (!mWifi.isConnected()) {
+                new ToastDialog(this.getActivity(),
+                        getResources().getString(R.string.no_connection_error)).show();
+                return;
+            }
+
+            RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
+                @Override
+                public void success(ShortNewsEntry[] news, Response response) {
+                    newsList = Arrays.asList(news);
+                    fillNewsGrid(gridview);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
         }
 
 

@@ -1,4 +1,4 @@
-package noveo.school.android.newsapp.view;
+package noveo.school.android.newsapp.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.view.CheckableLinearLayout;
 
 /**
  * Created by Arseniy Nazarov on 25.12.2014.

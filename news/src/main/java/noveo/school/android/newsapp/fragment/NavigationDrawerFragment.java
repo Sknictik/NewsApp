@@ -16,7 +16,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android_news.newsapp.R;
-import noveo.school.android.newsapp.view.ArrayAdapterForNavigationDrawer;
+import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNavigationDrawer;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

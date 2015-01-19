@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/toastDialogLayout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:color/black"
+              android:orientation="horizontal">
+
+        <TextView
+                    android:id="@+id/errorMsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_connection_error"
+                    android:textColor="@android:color/white"
+                    android:drawableLeft="@drawable/ic_dialog_alert"
+                    android:singleLine="true"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:paddingRight="@dimen/small_padding"/>
+
+    <View
+            android:layout_width="@dimen/divider_size"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:id="@+id/divider"
+            android:layout_alignParentTop="false"
+            android:layout_toStartOf="@+id/retryButton"
+            android:layout_toLeftOf="@+id/retryButton"
+            android:layout_alignBottom="@+id/errorMsg"/>
+
+    <Button
+                android:id="@+id/retryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry_button_string"
+                android:textColor="@android:color/white"
+                android:singleLine="true"
+                android:background="@null"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="@dimen/small_padding"
+                android:paddingRight="@dimen/small_padding"
+                android:ellipsize="none"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true">
+    </Button>
+
+</RelativeLayout>
