@@ -1,6 +1,7 @@
 <resources>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="small_padding">8dp</dimen>
+    <dimen name="large_margin">16dp</dimen>
 
     <dimen name="divider_size">1dp</dimen>
 

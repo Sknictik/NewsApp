@@ -2,4 +2,5 @@
 <resources>
     <color name="white">#FFFFFF</color>
     <color name="main_news_color">#cc0000</color>
+    <color name="text_gray_color">#555</color>
 </resources>

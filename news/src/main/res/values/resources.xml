@@ -21,6 +21,6 @@
         <item>@drawable/ic_star_purple</item>
         <item>@drawable/ic_star_blue</item>
     </array>
-    <integer name="news_preview_max_length">100</integer>
+
 
 </resources>

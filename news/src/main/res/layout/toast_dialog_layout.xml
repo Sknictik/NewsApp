@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/toastDialogLayout"
-              android:layout_width="match_parent"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:background="@android:color/black"
+              android:background="#D999"
               android:orientation="horizontal">
 
         <TextView
@@ -21,7 +21,7 @@
     <View
             android:layout_width="@dimen/divider_size"
             android:layout_height="wrap_content"
-            android:background="@android:color/darker_gray"
+            android:background="@android:color/white"
             android:id="@+id/divider"
             android:layout_alignParentTop="false"
             android:layout_toStartOf="@+id/retryButton"
@@ -33,9 +33,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/retry_button_string"
+                android:onClick="onRetryClick"
                 android:textColor="@android:color/white"
                 android:singleLine="true"
-                android:background="@null"
+                android:background="@drawable/toast_btn_bg"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="@dimen/small_padding"

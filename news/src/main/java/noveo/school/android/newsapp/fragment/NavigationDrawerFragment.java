@@ -16,6 +16,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNavigationDrawer;
 
 /**
@@ -69,10 +70,11 @@ public class NavigationDrawerFragment extends Fragment {
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
+            selectItem(mCurrentSelectedPosition, false);
         }
-
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        else {
+            selectItem(mCurrentSelectedPosition, true);
+        }
     }
 
     @Override
@@ -91,7 +93,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                selectItem(position, true);
             }
         });
 
@@ -202,7 +204,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    private void selectItem(int position, boolean loadNews) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -210,7 +212,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
-        if (mCallbacks != null) {
+        if (mCallbacks != null && loadNews) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
 
@@ -267,8 +269,9 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
+        if (item.getItemId() == R.id.refresh_btn) {
             getActionBar().setTitle(R.string.loading_title);
+            ((MainActivity) getActivity()).refreshNews();
             return true;
         }
 

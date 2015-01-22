@@ -20,6 +20,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="noveo.school.android.newsapp.activity.ReadNewsEntryActivity"
+                  android:parentActivityName="noveo.school.android.newsapp.activity.MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="noveo.school.android.newsapp.activity.MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>

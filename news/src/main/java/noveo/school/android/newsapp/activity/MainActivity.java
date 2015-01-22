@@ -2,32 +2,28 @@ package noveo.school.android.newsapp.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
+import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.view.*;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.Toast;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
+import noveo.school.android.newsapp.fragment.NewsEmptyFragment;
+import noveo.school.android.newsapp.fragment.NewsTopicFragment;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
-import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.ToastDialog;
-import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,39 +35,59 @@ public class MainActivity extends Activity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
+    private ToastDialog errorDialog;
 
-    private enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
+    //SavedInstanceState keys and values
+    private String mTitle;
+    private final String TITLE_KEY = "noveo.school.android.newsapp.TITLE";
+    private static boolean isErrorDialogOnScreen = false;
+    private final String IS_ERROR_DIALOG_ON_SCREEN_KEY = "noveo.school.android.newsapp.IS_ERROR_DIALOG_ON_SCREEN";
 
-    /**
-     * Used to store current heading
-     */
-    private static NewsTopic heading;
+    public enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
 
-    /**
-     * Used to store the last loaded news for current heading.
-     */
+    private static NewsTopic heading = NewsTopic.MAIN;
+
     private static List<ShortNewsEntry> newsList = new ArrayList<>();
+
+    private static final Logger newsOverviewActivityLogger = LoggerFactory.getLogger(MainActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            isErrorDialogOnScreen = savedInstanceState.getBoolean(IS_ERROR_DIALOG_ON_SCREEN_KEY, false);
+            if (isErrorDialogOnScreen) {
+                showErrorDialog();
+            }
+            mTitle = savedInstanceState.getString(TITLE_KEY, getResources().getString(R.string.title_main));
+            refreshActionBar();
+        }
+        else {
+            mTitle = getTitle().toString();
+        }
+
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+    }
 
-
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(IS_ERROR_DIALOG_ON_SCREEN_KEY, isErrorDialogOnScreen);
+        savedInstanceState.putString(TITLE_KEY, mTitle);
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -86,37 +102,96 @@ public class MainActivity extends Activity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, NewsTopicFragment.newInstance(position + 1))
-                .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        heading = NewsTopic.values()[number - 1];
-        switch (number) {
-            case 1:
+        heading = NewsTopic.values()[position];
+        switch (position) {
+            case 0:
                 mTitle = getString(R.string.title_main);
                 break;
-            case 2:
+            case 1:
                 mTitle = getString(R.string.title_politics);
                 break;
-            case 3:
+            case 2:
                 mTitle = getString(R.string.title_tech);
                 break;
-            case 4:
+            case 3:
                 mTitle = getString(R.string.title_culture);
                 break;
-            case 5:
+            case 4:
                 mTitle = getString(R.string.title_sports);
                 break;
         }
+
+        refreshActionBar();
+
+        if (checkWiFiConnection()) {
+            setNewsTopicFragment(false);
+        }
     }
 
-    public void restoreActionBar() {
+    private boolean checkWiFiConnection() {
+
+        NetworkInfo mWifi = ((ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE)).
+                getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (!mWifi.isConnected()) {
+            if (newsList.isEmpty()) {
+                setEmptyFragment();
+            }
+            if (!isErrorDialogOnScreen) {
+                showErrorDialog();
+                isErrorDialogOnScreen = true;
+            }
+            newsOverviewActivityLogger.error("Wifi offline. Aborting download.");
+            return false;
+        }
+        return true;
+    }
+
+    private void showErrorDialog() {
+        errorDialog = new ToastDialog(this,
+                getResources().getString(R.string.no_connection_error));
+        errorDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                isErrorDialogOnScreen = false;
+            }
+        });
+
+        errorDialog.show();
+    }
+
+    private void setEmptyFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, new NewsEmptyFragment())
+                .commit();
+    }
+
+    private void setNewsTopicFragment(boolean loadFromNet) {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, NewsTopicFragment.newInstance(heading, newsList, loadFromNet))
+                .commit();
+    }
+
+
+    public void onLoadFinished(List<ShortNewsEntry> news) {
+        newsList = news;
+        getActionBar().setTitle(mTitle);
+    }
+
+    public void onLoadFailed() {
+        if (newsList.isEmpty()) {
+            setEmptyFragment();
+        }
+    }
+
+    public void refreshActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(this.getResources().getIntArray(
+                (R.array.newsActionBarColorsArray))[heading.ordinal()]));
+        //actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
 
@@ -128,7 +203,7 @@ public class MainActivity extends Activity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
+            //refreshActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -149,116 +224,18 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class NewsTopicFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static NewsTopicFragment newInstance(int sectionNumber) {
-            NewsTopicFragment fragment = new NewsTopicFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public NewsTopicFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_news_grid, container, false);
-            final GridView gridview = (GridView) rootView;
-
-            //If news list is empty - load from site
-            if (newsList.isEmpty()) {
-                downloadNewsInGrid(gridview);
-            }
-            else {
-                fillNewsGrid(gridview);
-            }
-
-            return rootView;
-        }
-
-
-        private void downloadNewsInGrid(final GridView gridview) {
-            NetworkInfo mWifi = ((ConnectivityManager) getActivity().
-                    getSystemService(Context.CONNECTIVITY_SERVICE)).
-                    getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-
-            if (!mWifi.isConnected()) {
-                new ToastDialog(this.getActivity(),
-                        getResources().getString(R.string.no_connection_error)).show();
-                return;
-            }
-
-            RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
-                @Override
-                public void success(ShortNewsEntry[] news, Response response) {
-                    newsList = Arrays.asList(news);
-                    fillNewsGrid(gridview);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
-        }
-
-
-        private void fillNewsGrid(GridView gridview) {
-            List<ShortNewsEntry> topicNews = new ArrayList<>();
-
-            for (ShortNewsEntry entry : newsList) {
-                String[] topics = entry.getTopics();
-                for (String topic : topics) {
-                    if (heading.name().toLowerCase().equals(topic)) {
-                        topicNews.add(entry);
-                        break;
-                    }
-                }
-            }
-
-            Resources res = getResources();
-            TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
-
-            TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
-
-            Drawable faveIcon = icons.getDrawable(heading.ordinal());
-            int topicColor = colors.getColor(heading.ordinal(), 0);
-
-            gridview.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
-                    topicNews,
-                    faveIcon,
-                    topicColor));
-
-            gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                    Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
+    public void onRetryClick(View v) {
+        errorDialog.dismiss();
+        isErrorDialogOnScreen = false;
+        refreshNews();
     }
 
+    public void refreshNews() {
+        if (checkWiFiConnection()) {
+            setNewsTopicFragment(true);
+        }
+        else {
+            refreshActionBar();
+        }
+    }
 }
