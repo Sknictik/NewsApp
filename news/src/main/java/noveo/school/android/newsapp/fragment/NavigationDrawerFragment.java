@@ -70,10 +70,6 @@ public class NavigationDrawerFragment extends Fragment {
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
-            selectItem(mCurrentSelectedPosition, false);
-        }
-        else {
-            selectItem(mCurrentSelectedPosition, true);
         }
     }
 
@@ -82,6 +78,7 @@ public class NavigationDrawerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
+        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -93,7 +90,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position, true);
+                selectItem(position);
             }
         });
 
@@ -204,7 +201,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position, boolean loadNews) {
+    private void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
@@ -212,7 +209,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
-        if (mCallbacks != null && loadNews) {
+        if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
 
@@ -270,7 +267,6 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         if (item.getItemId() == R.id.refresh_btn) {
-            getActionBar().setTitle(R.string.loading_title);
             ((MainActivity) getActivity()).refreshNews();
             return true;
         }

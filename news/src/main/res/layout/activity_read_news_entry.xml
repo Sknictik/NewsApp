@@ -1,7 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:measureWithLargestChild="false">
+
+    <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/loadingBar"
+            android:indeterminate="true"/>
+
+    <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:background="@drawable/bg_news"
+                android:layout_alignTop="@+id/date_tv"
+                android:layout_alignBottom="@+id/title_tv"/>
+
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/date_tv"
+                android:paddingLeft="@dimen/small_padding"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                android:id="@+id/title_tv"
+                android:layout_gravity="center_horizontal"
+                android:layout_below="@+id/date_tv"
+                android:paddingBottom="@dimen/small_padding"
+                android:paddingLeft="@dimen/small_padding"
+                android:paddingTop="@dimen/small_padding"/>
+
+    </RelativeLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/container"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-</FrameLayout>
+    </FrameLayout>
+
+</LinearLayout>

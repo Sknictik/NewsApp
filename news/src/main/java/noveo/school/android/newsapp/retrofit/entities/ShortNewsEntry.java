@@ -5,29 +5,14 @@ import java.util.Date;
 /**
  * Created by Arseniy Nazarov on 08.01.2015.
  */
-public class ShortNewsEntry {
-    private String id;
+public class ShortNewsEntry extends NewsEntry {
+
     private String image;
-    private Date pubDate;
-    private String title;
-    private String[] topics;
-    private boolean isFavourite = false;
 
-
-    public ShortNewsEntry(String id, String image, Date pubDate, String title, String[] topics) {
-        this.id = id;
+    public ShortNewsEntry(String id, Date pubDate, String title, String image, String[] topics)
+    {
+        super(id, pubDate, title, topics);
         this.image = image;
-        this.pubDate = pubDate;
-        this.title = title;
-        this.topics = topics;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getImage() {
@@ -38,31 +23,4 @@ public class ShortNewsEntry {
         this.image = image;
     }
 
-    public Date getPubDate() {
-        return pubDate;
-    }
-
-    public void setPubDate(Date pubDate) {
-        this.pubDate = pubDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String[] getTopics() {
-        return topics;
-    }
-
-    public void setTopics(String[] topics) {
-        this.topics = topics;
-    }
-
-    public boolean isFavourite() { return isFavourite; }
-
-    public void setFavourite(boolean isFavourite) { this.isFavourite = isFavourite; }
 }

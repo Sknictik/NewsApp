@@ -42,9 +42,15 @@ public class NewsTopicFragment extends Fragment {
     private static boolean loadFromNet;
     private static List<ShortNewsEntry> newsList;
     private static MainActivity.NewsTopic heading;
+
     //ReadNewsEntryActivity keys
-    public final static String TOPIC_COLOR_KEY = "noveo.school.android.newsapp.TOPIC_COLOR";
-    public final static String NEWS_ID_KEY = "noveo.school.android.newsapp.NEWS_ID";
+    public final static String TOPIC_NUM_KEY = "noveo.school.android.newsapp.TOPIC_NUM";
+    public final static String TOPIC_KEY = "noveo.school.android.newsapp.TOPIC";
+
+    public final static String NEWS_ENTRY_ID_KEY = "noveo.school.android.newsapp.NEWS_ID";
+    public final static String NEWS_ENTRY_DATE_KEY = "noveo.school.android.newsapp.DATE";
+    public final static String NEWS_ENTRY_TITLE_KEY = "noveo.school.android.newsapp.TITLE";
+    public final static String NEWS_IS_FAVE_KEY = "noveo.school.android.newsapp.IS_FAVE";
 
     private static final Logger newsOverviewFragmentLogger = LoggerFactory.getLogger(NewsTopicFragment.class);
 
@@ -85,10 +91,17 @@ public class NewsTopicFragment extends Fragment {
         //If news list is empty - load from site
         if (newsList.isEmpty() || loadFromNet) {
             downloadNewsInGrid((GridView) view);
-        }
-        else {
+        } else {
             fillNewsGrid((GridView) view);
         }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        newsOverviewFragmentLogger.trace("Cancel all tasks");
+        RestClient.shutdownAll();
+        super.onDestroy();
     }
 
     private void downloadNewsInGrid(final GridView gridview) {
@@ -126,7 +139,6 @@ public class NewsTopicFragment extends Fragment {
 
         Resources res = getResources();
         TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
-
         TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
 
         Drawable faveIcon = icons.getDrawable(heading.ordinal());
@@ -140,8 +152,13 @@ public class NewsTopicFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Intent readNewsIntent = new Intent(getActivity(), ReadNewsEntryActivity.class);
-                readNewsIntent.putExtra(TOPIC_COLOR_KEY, topicColor);
-                readNewsIntent.putExtra(NEWS_ID_KEY, topicNews.get(position).getId());
+                readNewsIntent.putExtra(TOPIC_NUM_KEY, heading.ordinal());
+                readNewsIntent.putExtra(TOPIC_KEY, getActivity().getActionBar().getTitle());
+
+                readNewsIntent.putExtra(NEWS_ENTRY_ID_KEY, topicNews.get(position).getId());
+                readNewsIntent.putExtra(NEWS_ENTRY_DATE_KEY, topicNews.get(position).getPubDate());
+                readNewsIntent.putExtra(NEWS_ENTRY_TITLE_KEY, topicNews.get(position).getTitle());
+                readNewsIntent.putExtra(NEWS_IS_FAVE_KEY, topicNews.get(position).isFavourite());
                 startActivity(readNewsIntent);
             }
         });

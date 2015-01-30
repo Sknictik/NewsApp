@@ -21,6 +21,12 @@
         <item>@drawable/ic_star_purple</item>
         <item>@drawable/ic_star_blue</item>
     </array>
-
+    <string-array name="topics">
+        <item>@string/title_main</item>
+        <item>@string/title_politics</item>
+        <item>@string/title_tech</item>
+        <item>@string/title_culture</item>
+        <item>@string/title_sports</item>
+    </string-array>
 
 </resources>
