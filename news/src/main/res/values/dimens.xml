@@ -18,4 +18,8 @@
     <dimen name="news_entry_height">120dp</dimen>
     <dimen name="news_entry_horizontral_vertical_spacing">8dp</dimen>
     <dimen name="news_cell_padding">8dp</dimen>
+
+    <!--Progress bar dimensions-->
+    <dimen name="progressbar_margin_top">-4dp</dimen>
+    <dimen name="progressbar_margin_bottom">-4dp</dimen>
 </resources>

@@ -27,7 +27,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        style="@android:style/TextAppearance.Medium"
                         android:layout_marginLeft="@dimen/small_margin"
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
@@ -68,7 +68,7 @@
                     android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.75"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    style="@android:style/TextAppearance.Medium"
                     android:textColor="@android:color/black"
                     android:ellipsize="marquee"/>
 

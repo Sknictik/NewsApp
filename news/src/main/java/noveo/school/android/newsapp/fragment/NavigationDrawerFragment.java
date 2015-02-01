@@ -288,7 +288,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     /**
-     * Callbacks interface that all activities using this fragment must implement.
+     * Callbacks interfaces that all activities using this fragment must implement.
      */
     public static interface NavigationDrawerCallbacks {
         /**

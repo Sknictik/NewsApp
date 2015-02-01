@@ -11,15 +11,20 @@
     <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/mainLayout"
+            android:background="@color/white">
 
         <ProgressBar
-                style="?android:attr/progressBarStyleSmall"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/loadingBar"
+                android:layout_marginBottom="@dimen/progressbar_margin_bottom"
+                android:layout_marginTop="@dimen/progressbar_margin_top"
+                android:progressDrawable="@drawable/progressbar_color"
                 android:indeterminate="true"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
 
         <FrameLayout
                 android:id="@+id/container"

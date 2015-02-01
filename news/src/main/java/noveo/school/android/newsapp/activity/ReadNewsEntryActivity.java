@@ -2,6 +2,8 @@ package noveo.school.android.newsapp.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -13,8 +15,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.fragment.NewsEmptyFragment;
 import noveo.school.android.newsapp.fragment.NewsEntryFragment;
 import noveo.school.android.newsapp.fragment.NewsTopicFragment;
+import noveo.school.android.newsapp.retrofit.service.RestClient;
+import noveo.school.android.newsapp.view.ToastDialog;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -28,6 +33,11 @@ public class ReadNewsEntryActivity extends Activity {
     private String mTitle;
     private final Format TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
     private Menu menu;
+    private ToastDialog errorDialog;
+
+    //SavedInstanceState keys and values
+    private final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,12 @@ public class ReadNewsEntryActivity extends Activity {
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new NewsEntryFragment()).commit();
+        }
+        else {
+            int errorNum = savedInstanceState.getInt(ERROR_DIALOG_KEY, -1);
+            if (errorNum != -1) {
+                showErrorDialog(RestClient.Error.values()[errorNum]);
+            }
         }
     }
 
@@ -87,6 +103,16 @@ public class ReadNewsEntryActivity extends Activity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (errorDialog != null) {
+            savedInstanceState.putInt(ERROR_DIALOG_KEY, errorDialog.getReason().ordinal());
+        }
+        //savedInstanceState.putString(TITLE_KEY, mTitle);
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -108,8 +134,22 @@ public class ReadNewsEntryActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+
     public void onLoadFinished() {
         restoreActionBar();
+    }
+
+    public void onLoadFailed(RestClient.Error reason) {
+        restoreActionBar();
+        showErrorDialog(reason);
+        setEmptyFragment();
+    }
+
+    private void setEmptyFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, new NewsEmptyFragment())
+                .commit();
     }
 
     private void setActionBarLoading() {
@@ -136,15 +176,32 @@ public class ReadNewsEntryActivity extends Activity {
         bar.setTitle(mTitle);
 
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
-        loadingBar.setVisibility(View.GONE);
+        loadingBar.setVisibility(View.INVISIBLE);
 
         if (menu != null && !menu.hasVisibleItems()) {
             getMenuInflater().inflate(R.menu.news_entry_menu, menu);
         }
     }
 
+
     public void onLoadStart() {
         setActionBarLoading();
+    }
+
+    private void showErrorDialog(RestClient.Error reason) {
+        if (errorDialog != null) {
+            errorDialog.dismiss();
+        }
+
+        errorDialog = new ToastDialog(this, reason);
+        errorDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                errorDialog = null;
+            }
+        });
+
+        errorDialog.show();
     }
 
 }

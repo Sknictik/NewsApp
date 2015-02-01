@@ -9,10 +9,10 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/no_news_message"
+            style="@android:style/TextAppearance.Large"
             android:textColor="@color/text_gray_color"
-            android:id="@+id/textView"
+            android:id="@+id/errorTV"
+            android:text="@string/no_news_message"
             android:layout_gravity="center"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"/>

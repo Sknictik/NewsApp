@@ -3,7 +3,7 @@
               android:id="@+id/toastDialogLayout"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:background="#D999"
+              android:background="@drawable/bg_dialog_alert"
               android:orientation="horizontal">
 
         <TextView
@@ -14,7 +14,6 @@
                     android:textColor="@android:color/white"
                     android:drawableLeft="@drawable/ic_dialog_alert"
                     android:singleLine="true"
-                    android:textAppearance="?android:textAppearanceMedium"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:paddingRight="@dimen/small_padding"/>
@@ -37,8 +36,8 @@
                 android:onClick="onRetryClick"
                 android:textColor="@android:color/white"
                 android:singleLine="true"
-                android:background="@drawable/toast_btn_bg"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:background="@drawable/toast_btn_selector"
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="@dimen/small_padding"
                 android:paddingRight="@dimen/small_padding"

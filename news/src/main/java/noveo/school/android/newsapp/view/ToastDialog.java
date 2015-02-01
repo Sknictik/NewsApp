@@ -14,19 +14,35 @@ import android.graphics.drawable.InsetDrawable;
 import android.view.*;
 import android.widget.TextView;
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 public class ToastDialog extends Dialog {
 
-    public ToastDialog(Context context, String text) {
+    private RestClient.Error reason;
+
+    public ToastDialog(Context context, RestClient.Error reason) {
         super(context);
+
+        this.reason = reason;
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(android.content.Context.
                         LAYOUT_INFLATER_SERVICE);
 
         View layout = inflater.inflate(R.layout.toast_dialog_layout, null);
+
+        String errMsg;
+
+        switch(reason) {
+            case NO_CONNECTION: {errMsg = getContext().getString(R.string.no_connection_error); break;}
+            case CONNECTION_TIMEOUT: {errMsg = getContext().getString(R.string.timeout_error); break;}
+            default:
+            case UNKNOWN_ERROR: {errMsg = getContext().getString(R.string.unknown_error); break;}
+        }
+
         TextView tv = (TextView) layout.findViewById(R.id.errorMsg);
-        tv.setText(text);
+        tv.setText(errMsg);
         setContentView(layout);
 
         setCanceledOnTouchOutside(true);
@@ -54,6 +70,10 @@ public class ToastDialog extends Dialog {
         else {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
+    }
+
+    public RestClient.Error getReason() {
+        return reason;
     }
 
 }

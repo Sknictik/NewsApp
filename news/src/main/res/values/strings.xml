@@ -17,5 +17,7 @@
     <string name="no_news_message">Не удалось загрузить новости</string>
     <!--Сообщения ошибки-->
     <string name="no_connection_error">Соединение отсутствует</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="timeout_error">Истекло время ожидания</string>
 
 </resources>
