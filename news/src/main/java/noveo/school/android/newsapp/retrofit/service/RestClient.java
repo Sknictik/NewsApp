@@ -15,6 +15,7 @@ import retrofit.android.MainThreadExecutor;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,20 +109,16 @@ public class RestClient {
 
     private static Error inspectError(RetrofitError error) {
         switch (error.getKind()) {
-            case HTTP: {
-                // TODO get message from getResponse()'s body or HTTP status
-                //String msg = error.getResponse().getBody().mimeType();
-                restClientLogger.error("Connection timeout error");
-                return Error.CONNECTION_TIMEOUT;
-            }
-
             case NETWORK: {
-                // TODO get message from getCause()'s message or just declare "network problem"
-                //String msg = error.getResponse().getBody().mimeType();
-                restClientLogger.error("No connection error");
-                return Error.NO_CONNECTION;
+                if (error.getCause() instanceof SocketTimeoutException) {
+                    restClientLogger.error("Timeout error");
+                    return Error.CONNECTION_TIMEOUT;
+                } else {
+                    restClientLogger.error("No connection error");
+                    return Error.NO_CONNECTION;
+                }
             }
-
+            case HTTP:
             case CONVERSION:
             case UNEXPECTED:
             default: {

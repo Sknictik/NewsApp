@@ -22,4 +22,11 @@
     <!--Progress bar dimensions-->
     <dimen name="progressbar_margin_top">-4dp</dimen>
     <dimen name="progressbar_margin_bottom">-4dp</dimen>
+
+    <!--Photo image view dimensions-->
+    <dimen name="photo_width_horiz">130dp</dimen>
+    <dimen name="photo_height_horiz">160dp</dimen>
+
+    <dimen name="photo_width_vert">160dp</dimen>
+    <dimen name="photo_height_vert">160dp</dimen>
 </resources>

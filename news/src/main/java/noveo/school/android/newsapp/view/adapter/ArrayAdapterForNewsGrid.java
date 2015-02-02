@@ -82,9 +82,14 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
         else {
             newsIV.setVisibility(View.GONE);
         }
+        ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
+        faveIV.setImageDrawable(faveIcon);
+
         if (newsEntry.isFavourite()) {
-            ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
-            faveIV.setImageDrawable(faveIcon);
+            faveIV.setVisibility(View.VISIBLE);
+        }
+        else {
+            faveIV.setVisibility(View.INVISIBLE);
         }
 
         return convertView;

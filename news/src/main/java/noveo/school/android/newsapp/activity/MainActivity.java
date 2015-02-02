@@ -2,6 +2,7 @@ package noveo.school.android.newsapp.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
@@ -68,11 +69,17 @@ public class MainActivity extends Activity
             }
 
             mTitle = savedInstanceState.getString(TITLE_KEY, getResources().getString(R.string.title_main));
+            Fragment onScreenFragment = getFragmentManager().findFragmentById(R.id.container);
+            if (onScreenFragment instanceof NewsTopicFragment) {
+                newsOverviewFragment = (NewsTopicFragment) onScreenFragment;
+            }
         }
         else {
             mTitle = getTitle().toString();
+            newsOverviewFragment = setNewsTopicFragment();
         }
-
+        //TODO Remove loading on recreate
+        //TODO Orientation change on main activity crashes app
         refreshActionBar();
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -82,9 +89,6 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        newsOverviewFragment = setNewsTopicFragment();
-        //setLoadingState();
 
     }
 
@@ -153,6 +157,7 @@ public class MainActivity extends Activity
         bar.setDisplayShowHomeEnabled(false);
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
         loadingBar.setVisibility(View.VISIBLE);
+        //loadingBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.progressbar_color));
 
         if (menu != null) {
             menu.clear();
@@ -161,7 +166,7 @@ public class MainActivity extends Activity
 
     private void restoreActionBar() {
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
-        loadingBar.setVisibility(View.INVISIBLE);
+        loadingBar.setVisibility(View.GONE);
 
         ActionBar bar = getActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
@@ -169,7 +174,7 @@ public class MainActivity extends Activity
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayUseLogoEnabled(true);
-        bar.setTitle(mTitle);
+        //bar.setTitle(mTitle);
         if (menu != null && !menu.hasVisibleItems()) {
             getMenuInflater().inflate(R.menu.main, menu);
         }

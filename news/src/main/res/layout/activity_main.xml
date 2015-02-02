@@ -24,7 +24,7 @@
                 android:layout_marginTop="@dimen/progressbar_margin_top"
                 android:progressDrawable="@drawable/progressbar_color"
                 android:indeterminate="true"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
         <FrameLayout
                 android:id="@+id/container"

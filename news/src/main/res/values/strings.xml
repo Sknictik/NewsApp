@@ -20,4 +20,6 @@
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="timeout_error">Истекло время ожидания</string>
 
+    <string name="shared_preference_name">NEWS_APP</string>>
+
 </resources>

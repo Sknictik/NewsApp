@@ -4,8 +4,7 @@
             android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid
-                        android:color="@android:color/holo_blue_light" />
+                <solid android:color="@android:color/holo_blue_light" />
             </shape>
         </clip>
     </item>
