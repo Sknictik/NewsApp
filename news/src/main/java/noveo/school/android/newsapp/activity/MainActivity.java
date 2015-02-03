@@ -78,8 +78,6 @@ public class MainActivity extends Activity
             mTitle = getTitle().toString();
             newsOverviewFragment = setNewsTopicFragment();
         }
-        //TODO Remove loading on recreate
-        //TODO Orientation change on main activity crashes app
         refreshActionBar();
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -185,7 +183,9 @@ public class MainActivity extends Activity
     public void onLoadFinished(List<ShortNewsEntry> news) {
         newsList = news;
         restoreActionBar();
-        newsOverviewFragment.fillNewsGrid(heading, newsList);
+        if (newsOverviewFragment.isAdded()) {
+            newsOverviewFragment.fillNewsGrid(heading, newsList);
+        }
     }
 
     @Override

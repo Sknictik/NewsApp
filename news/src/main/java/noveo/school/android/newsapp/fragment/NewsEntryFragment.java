@@ -12,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
+import noveo.school.android.newsapp.activity.PhotoGalleryActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
+import noveo.school.android.newsapp.picasso.PicassoSingleton;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
@@ -21,6 +23,10 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  * Created by Arseniy Nazarov on 23.01.2015.
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
+
+    public static final String CAPTION_KEY = "noveo.school.android.newsapp.CAPTION";
+    public static final String IMAGE_PATHS_ARGUMENT_KEY = "noveo.school.android.newsapp.IMAGE_PATHS";
+    public static final String POSITION_ARGUMENT_KEY = "noveo.school.android.newsapp.POSITION";
 
     //private static final Logger newsEntryFragmentLogger = LoggerFactory.getLogger(NewsEntryFragment.class);
     private FullNewsEntry storedNewsEntry = null;
@@ -36,7 +42,7 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        setRetainInstance(true);
         return inflater.inflate(R.layout.fragment_news_entry,
                 container, false);
     }
@@ -53,6 +59,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     @Override
     public void onLoadFinished(FullNewsEntry news) {
+        storedNewsEntry = news;
+
         //If fragment is not attached discard data
         if (!isAdded()) {
             return;
@@ -60,10 +68,10 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
         WebView newsWV = (WebView) getView().findViewById(R.id.news_wv);
         LinearLayout imagesLayout = (LinearLayout) getView().findViewById(R.id.imagesContainerLayout);
 
-        String[] imageUrls = news.getImages();
+        final String[] imageUrls = news.getImages();
         if (imageUrls.length != 0) {
             imagesLayout.setVisibility(View.VISIBLE);
-            for (String imageUrl : imageUrls) {
+            for (int urlPos = 0; urlPos < imageUrls.length; urlPos++) {
                 ImageView photoView = new ImageView(getActivity());
                 int width, height;
                 if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -80,8 +88,23 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
                 vp.setMargins(pad, pad, pad, pad);
                 photoView.setLayoutParams(vp);
                 photoView.setScaleType(ImageView.ScaleType.FIT_XY);
-                Picasso.with(getActivity())
-                        .load(imageUrl)
+                photoView.setTag(urlPos);
+                photoView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent viewPhotoIntent = new Intent(getActivity(), PhotoGalleryActivity.class);
+                        viewPhotoIntent.putExtra(CAPTION_KEY,
+                                getArguments().getString(ReadNewsEntryActivity.NEWS_TITLE_ARGUMENT_KEY));
+                        viewPhotoIntent.putExtra(IMAGE_PATHS_ARGUMENT_KEY, imageUrls);
+                        viewPhotoIntent.putExtra(POSITION_ARGUMENT_KEY, (int) v.getTag());
+                        startActivity(viewPhotoIntent);
+                    }
+                });
+
+                Picasso picasso = PicassoSingleton.get(getActivity());
+
+                picasso.with(getActivity())
+                        .load(imageUrls[urlPos])
                         .placeholder(R.drawable.ic_stub_loading)
                         .error(R.drawable.ic_stub_error)
                         .into(photoView);

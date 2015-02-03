@@ -46,9 +46,11 @@ public class ReadNewsEntryActivity extends Activity {
     //SavedInstanceState keys and values
     private final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
     private static final Logger readNewsEntryActivityLogger = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
-
+    //Result keys
     public static final String NEWS_ENTRY_ID_RESULT_KEY = "noveo.school.android.newsapp.NEWS_ID_RESULT";
     public static final String NEWS_IS_FAVE_RESULT_KEY = "noveo.school.android.newsapp.IS_FAVE_RESULT";
+    //Fragment arguments key
+    public static final String NEWS_TITLE_ARGUMENT_KEY = "noveo.school.android.newsapp.NEWS_TITLE_ARG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,6 @@ public class ReadNewsEntryActivity extends Activity {
         int topicNum = intent.getIntExtra(NewsTopicFragment.TOPIC_NUM_KEY, 0);
         final int color = colors.getColor(topicNum, 0);
         dateTV.setTextColor(color);
-        //TODO landscape layout does not work without images
         Date newsDate = (Date) intent.getSerializableExtra(NewsTopicFragment.NEWS_ENTRY_DATE_KEY);
         String stringTime = TIME_FORMAT.format(newsDate);
         dateTV.setText(stringTime);
@@ -134,8 +135,6 @@ public class ReadNewsEntryActivity extends Activity {
         final int color = colors.getColor(topicNum, 0);
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
 
-
-
         return true;
     }
 
@@ -160,6 +159,9 @@ public class ReadNewsEntryActivity extends Activity {
             return true;
         }
         else if (id == R.id.fave_btn) {
+            if (newsEntryObj == null) {
+                return true;
+            }
             SharedPreferences mPrefs = getSharedPreferences(getString(R.string.shared_preference_name),
                     MODE_PRIVATE);
             SharedPreferences.Editor prefsEditor = mPrefs.edit();
@@ -167,23 +169,18 @@ public class ReadNewsEntryActivity extends Activity {
             if (item.isChecked()) {
                 item.setIcon(R.drawable.ic_menu_star_default);
                 item.setChecked(false);
-                if (newsEntryObj != null) {
                     prefsEditor.remove(newsEntryObj.getId());
                     intent.putExtra(NEWS_IS_FAVE_RESULT_KEY, false);
                     readNewsEntryActivityLogger.trace("News object was marked for deletion");
-                }
             }
             else {
                 item.setIcon(R.drawable.ic_menu_star_checked);
                 item.setChecked(true);
-                //Creating a shared preference
-                if (newsEntryObj != null) {
                     Gson gson = new Gson();
                     String jsonObj = gson.toJson(newsEntryObj);
                     prefsEditor.putString(newsEntryObj.getId(), jsonObj);
                     intent.putExtra(NEWS_IS_FAVE_RESULT_KEY, true);
                     readNewsEntryActivityLogger.trace("News object was marked for storage");
-                }
             }
             intent.putExtra(NEWS_ENTRY_ID_RESULT_KEY, newsEntryObj.getId());
             this.setResult(RESULT_OK, intent);
@@ -219,14 +216,24 @@ public class ReadNewsEntryActivity extends Activity {
 
     private void setNewsEntryFragment() {
         FragmentManager fragmentManager = getFragmentManager();
+        NewsEntryFragment fragment = new NewsEntryFragment();
+        Bundle mBundle = new Bundle();
+        mBundle.putString(NEWS_TITLE_ARGUMENT_KEY,
+                ((TextView) findViewById(R.id.title_tv)).getText().toString());
+        fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
-                .add(R.id.container, new NewsEntryFragment()).commit();
+                .add(R.id.container, fragment).commit();
     }
 
     private void setNewsEntryFragment(FullNewsEntry newsEntry) {
         FragmentManager fragmentManager = getFragmentManager();
+        NewsEntryFragment fragment = NewsEntryFragment.newInstance(newsEntry);
+        Bundle mBundle = new Bundle();
+        mBundle.putString(NEWS_TITLE_ARGUMENT_KEY,
+                ((TextView) findViewById(R.id.title_tv)).getText().toString());
+        fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
-                .add(R.id.container, NewsEntryFragment.newInstance(newsEntry)).commit();
+                .add(R.id.container, fragment).commit();
     }
 
 

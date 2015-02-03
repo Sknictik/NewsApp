@@ -20,6 +20,14 @@ public abstract class NewsEntry {
         this.topics = topics;
     }
 
+    public NewsEntry(String id, Date pubDate, String title, String[] topics, boolean isFavourite) {
+        this.id = id;
+        this.pubDate = pubDate;
+        this.title = title;
+        this.topics = topics;
+        this.isFavourite = isFavourite;
+    }
+
     public String getId() {
         return id;
     }

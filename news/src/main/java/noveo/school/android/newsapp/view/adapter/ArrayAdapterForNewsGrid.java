@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
+import noveo.school.android.newsapp.picasso.PicassoSingleton;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 
 import java.text.Format;
@@ -72,7 +73,9 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
         ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
 
         if (imageUrl != null) {
-            Picasso.with(context)
+            Picasso picasso = PicassoSingleton.get(context);
+
+            picasso.with(context)
                     .load(newsEntry.getImage())
                     .placeholder(R.drawable.ic_stub_loading)
                     .error(R.drawable.ic_stub_error)

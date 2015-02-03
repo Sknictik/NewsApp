@@ -47,7 +47,7 @@ public class NewsTopicFragment extends Fragment {
     final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
 
     private List<ShortNewsEntry> topicNews = new ArrayList<>();
-
+    private GridView gridView;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -61,27 +61,32 @@ public class NewsTopicFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        setRetainInstance(true);
-        return inflater.inflate(R.layout.fragment_news_grid, container, false);
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         RestClient.downloadNews((MainActivity) getActivity());
     }
 
-    public void fillNewsGrid(final MainActivity.NewsTopic heading, List<ShortNewsEntry> newsList) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        setRetainInstance(true);
+        if (gridView != null) {
+            GridView newGrid = (GridView) inflater.inflate(R.layout.fragment_news_grid, container, false);
+            newGrid.setAdapter(gridView.getAdapter());
+            newGrid.setOnItemClickListener(gridView.getOnItemClickListener());
+            gridView = newGrid;
+        }
+        else {
+            gridView = (GridView) inflater.inflate(R.layout.fragment_news_grid, container, false);
+        }
+        return gridView;
+    }
 
+    public void fillNewsGrid(final MainActivity.NewsTopic heading, List<ShortNewsEntry> newsList) {
         SharedPreferences mPrefs = getActivity().getSharedPreferences(getString(R.string.shared_preference_name),
                 Context.MODE_PRIVATE);
+
+        topicNews.clear();
 
         for (ShortNewsEntry entry : newsList) {
             String[] topics = entry.getTopics();
@@ -127,6 +132,7 @@ public class NewsTopicFragment extends Fragment {
         });
         getView().setBackgroundColor(Color.WHITE);
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

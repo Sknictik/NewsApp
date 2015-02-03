@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/white">
 
-    <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/scrollView">
-
-        <LinearLayout
+        <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="match_parent">
 
             <LinearLayout
                     android:id="@+id/imagesContainerLayout"
@@ -30,8 +25,8 @@
                     android:id="@+id/news_wv"
                     style="@android:style/TextAppearance.Medium"
                     android:layout_gravity="center_horizontal"
-                    android:background="@color/white"/>
-        </LinearLayout>
-    </ScrollView>
+                    android:background="@color/white"
+                    android:layout_toRightOf="@+id/imagesContainerLayout"/>
+        </RelativeLayout>
 
-</LinearLayout>
+</ScrollView>

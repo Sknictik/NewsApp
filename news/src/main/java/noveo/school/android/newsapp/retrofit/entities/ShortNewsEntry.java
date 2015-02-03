@@ -9,7 +9,7 @@ public class ShortNewsEntry extends NewsEntry {
 
     private String image;
 
-    public ShortNewsEntry(String id, Date pubDate, String title, String image, String[] topics)
+       public ShortNewsEntry(String id, Date pubDate, String title, String image, String[] topics)
     {
         super(id, pubDate, title, topics);
         this.image = image;
@@ -22,5 +22,4 @@ public class ShortNewsEntry extends NewsEntry {
     public void setImage(String image) {
         this.image = image;
     }
-
 }
