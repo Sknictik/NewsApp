@@ -3,14 +3,14 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@drawable/bg_empty"
-              >
+              android:background="@drawable/bg_empty">
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@android:style/TextAppearance.Large"
             android:textColor="@color/text_gray_color"
+            android:gravity="center_horizontal"
             android:id="@+id/errorTV"
             android:text="@string/no_news_message"
             android:layout_gravity="center"

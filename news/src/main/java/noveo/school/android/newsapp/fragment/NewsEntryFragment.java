@@ -2,7 +2,6 @@ package noveo.school.android.newsapp.fragment;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +23,7 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
 
-    public static final String CAPTION_KEY = "noveo.school.android.newsapp.CAPTION";
-    public static final String IMAGE_PATHS_ARGUMENT_KEY = "noveo.school.android.newsapp.IMAGE_PATHS";
-    public static final String POSITION_ARGUMENT_KEY = "noveo.school.android.newsapp.POSITION";
+
 
     //private static final Logger newsEntryFragmentLogger = LoggerFactory.getLogger(NewsEntryFragment.class);
     private FullNewsEntry storedNewsEntry = null;
@@ -51,7 +48,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Intent intent = getActivity().getIntent();
         if (storedNewsEntry == null) {
-            RestClient.downloadNewsEntry(this, intent.getStringExtra(NewsTopicFragment.NEWS_ENTRY_ID_KEY));
+            RestClient.downloadNewsEntry(this, intent.getStringExtra(
+                    getString(R.string.news_topic_fragment_news_entry_id_key)));
         }
         else onLoadFinished(storedNewsEntry);
     }
@@ -74,29 +72,30 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
             for (int urlPos = 0; urlPos < imageUrls.length; urlPos++) {
                 ImageView photoView = new ImageView(getActivity());
                 int width, height;
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    width = (int) getResources().getDimension(R.dimen.photo_width_horiz);
-                    height = (int) getResources().getDimension(R.dimen.photo_height_horiz);
-                }
-                else {
-                    width = (int) getResources().getDimension(R.dimen.photo_width_vert);
-                    height = (int) getResources().getDimension(R.dimen.photo_height_vert);
-                }
+                width = (int) getResources().getDimension(R.dimen.photo_width_horiz);
+                height = (int) getResources().getDimension(R.dimen.photo_height_horiz);
+
                 LinearLayout.LayoutParams vp =
                         new LinearLayout.LayoutParams(width, height);
-                int pad = (int) getResources().getDimension(R.dimen.small_padding);
-                vp.setMargins(pad, pad, pad, pad);
+                int marg = (int) getResources().getDimension(R.dimen.small_padding);
+                vp.setMargins(marg, marg, marg, marg);
                 photoView.setLayoutParams(vp);
                 photoView.setScaleType(ImageView.ScaleType.FIT_XY);
                 photoView.setTag(urlPos);
+                int pad = (int) getResources().getDimension(R.dimen.border_padding);
+                photoView.setPadding(pad, pad, pad, pad);
+                photoView.setBackgroundResource(R.drawable.bg_image);
                 photoView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent viewPhotoIntent = new Intent(getActivity(), PhotoGalleryActivity.class);
-                        viewPhotoIntent.putExtra(CAPTION_KEY,
-                                getArguments().getString(ReadNewsEntryActivity.NEWS_TITLE_ARGUMENT_KEY));
-                        viewPhotoIntent.putExtra(IMAGE_PATHS_ARGUMENT_KEY, imageUrls);
-                        viewPhotoIntent.putExtra(POSITION_ARGUMENT_KEY, (int) v.getTag());
+                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_caption_param_key),
+                                getArguments().getString(
+                                        getString(R.string.read_news_entry_activity_news_title_param_key)));
+                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_image_paths_param_key),
+                                imageUrls);
+                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_pos_param_key),
+                                (int) v.getTag());
                         startActivity(viewPhotoIntent);
                     }
                 });
@@ -106,6 +105,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
                 picasso.with(getActivity())
                         .load(imageUrls[urlPos])
                         .placeholder(R.drawable.ic_stub_loading)
+                        .fit()
+                        .centerCrop()
                         .error(R.drawable.ic_stub_error)
                         .into(photoView);
                 imagesLayout.addView(photoView);

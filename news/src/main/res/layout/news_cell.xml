@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/small_margin"
-                android:paddingRight="@dimen/small_margin"
-                android:paddingTop="@dimen/small_margin"
-                android:paddingBottom="@dimen/small_margin"
-                android:background="@drawable/bg_news"
-                tools:context=".MainActivity$NewsTopicFragment">
-
     <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:paddingLeft="@dimen/small_margin"
+            android:paddingRight="@dimen/small_margin"
+            android:paddingTop="@dimen/small_margin"
+            android:paddingBottom="@dimen/small_margin"
+            android:background="@drawable/bg_news"
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/news_row_height">
+            android:layout_height="@dimen/news_row_height"
+            tools:context=".MainActivity$NewsTopicFragment">
 
         <RelativeLayout
                     android:id="@+id/miscLayout"
@@ -26,9 +23,7 @@
                         android:id="@+id/dateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        style="@android:style/TextAppearance.Medium"
-                        android:layout_marginLeft="@dimen/small_margin"
+                        style="@android:style/TextAppearance.Small"
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"/>
@@ -51,30 +46,25 @@
 
             <ImageView
                     android:id="@+id/newsImageView"
-                    android:layout_width="@dimen/zero"
-                    android:layout_weight="0.25"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/small_margin"
                     android:layout_marginTop="@dimen/small_margin"
-                    android:layout_marginLeft="@dimen/small_margin"
                     android:layout_marginRight="@dimen/small_margin"
-                    android:background="@color/white"
+                    android:background="@drawable/bg_image"
+                    android:padding="@dimen/border_padding"
                     android:layout_gravity="top"
                     android:visibility="gone"
-                    android:src="@drawable/ic_stub_loading"
-                    android:scaleType="fitXY"/>
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_stub_loading"/>
 
             <TextView
                     android:id="@+id/newsTextView"
-                    android:layout_width="@dimen/zero"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.75"
                     style="@android:style/TextAppearance.Medium"
                     android:textColor="@android:color/black"
-                    android:ellipsize="marquee"/>
+                    android:ellipsize="end"/>
 
         </LinearLayout>
 
     </LinearLayout>
-
-</RelativeLayout>

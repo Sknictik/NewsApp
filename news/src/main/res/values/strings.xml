@@ -19,7 +19,25 @@
     <string name="no_connection_error">Соединение отсутствует</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="timeout_error">Истекло время ожидания</string>
+    <!--Ключи-->
+    <string name="shared_preference_name">NEWS_APP</string>
 
-    <string name="shared_preference_name">NEWS_APP</string>>
+    <string name="main_activity_error_dialog_key">noveo.school.android.newsapp.MainActivity.ERROR_DIALOG</string>
+    <string name="main_activity_title_key">noveo.school.android.newsapp.MainActivity.TITLE</string>
+
+    <string name="read_news_entry_activity_id_result_key">noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_ID_RESULT</string>
+    <string name="read_news_entry_activity_news_is_fave_result_key">noveo.school.android.newsapp.ReadNewsEntryActivity.IS_FAVE_RESULT</string>
+    <string name="read_news_entry_activity_news_title_param_key">noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_TITLE_PARAM</string>
+
+    <string name="news_entry_fragment_caption_param_key">noveo.school.android.newsapp.NewsEntryFragment.CAPTION_PARAM</string>
+    <string name="news_entry_fragment_image_paths_param_key">noveo.school.android.newsapp.NewsEntryFragment.IMAGE_PATHS_PARAM</string>
+    <string name="news_entry_fragment_pos_param_key">noveo.school.android.newsapp.NewsEntryFragment.POSITION_PARAM</string>
+
+    <string name="news_topic_fragment_topic_num_key">noveo.school.android.newsapp.NewsTopicFragment.TOPIC_NUM</string>
+    <string name="news_topic_fragment_topic_key">noveo.school.android.newsapp.NewsTopicFragment.TOPIC</string>
+    <string name="news_topic_fragment_news_entry_id_key">noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_ID</string>
+    <string name="news_topic_fragment_news_entry_date_key">noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_DATE</string>
+    <string name="news_topic_fragment_news_entry_title_key">noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_TITLE</string>
+    <string name="news_topic_fragment_news_is_fave_key">noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_IS_FAVE</string>
 
 </resources>

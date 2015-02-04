@@ -3,9 +3,10 @@ package noveo.school.android.newsapp.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android_news.newsapp.R;
-import noveo.school.android.newsapp.fragment.NewsEntryFragment;
 import noveo.school.android.newsapp.view.adapter.FullScreenImageAdapter;
 
 /**
@@ -18,15 +19,37 @@ public class PhotoGalleryActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_gallery);
 
-        String[] imagePaths = getIntent().getStringArrayExtra(NewsEntryFragment.IMAGE_PATHS_ARGUMENT_KEY);
+        final String[] imagePaths = getIntent().getStringArrayExtra(
+                getString(R.string.news_entry_fragment_image_paths_param_key));
 
-        int pos = getIntent().getIntExtra(NewsEntryFragment.POSITION_ARGUMENT_KEY, 1);
+        int pos = getIntent().getIntExtra(getString(R.string.news_entry_fragment_pos_param_key), 0);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new FullScreenImageAdapter(this,
-                imagePaths,
-                getIntent().getStringExtra(NewsEntryFragment.CAPTION_KEY)));
+                imagePaths));
+        String actionBarTitle = "Фото " + (pos + 1) + " из " + imagePaths.length;
+        getActionBar().setTitle(actionBarTitle);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+                //Do nothing
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                String actionBarTitle = "Фото " + (i + 1) + " из " + imagePaths.length;
+                getActionBar().setTitle(Html.fromHtml(actionBarTitle));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+                //Do nothing
+            }
+        });
         viewPager.setCurrentItem(pos);
+
+        ((TextView)findViewById(R.id.photoCaption)).setText(getIntent().getStringExtra(
+                getString(R.string.news_entry_fragment_caption_param_key)));
     }
 
     @Override

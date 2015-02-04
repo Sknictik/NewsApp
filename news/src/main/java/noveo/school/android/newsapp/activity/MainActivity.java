@@ -41,8 +41,7 @@ public class MainActivity extends Activity
     private Menu menu;
 
     //SavedInstanceState keys and values
-    private final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
-    private final String TITLE_KEY = "noveo.school.android.newsapp.TITLE";
+
 
     private String mTitle;
 
@@ -63,12 +62,13 @@ public class MainActivity extends Activity
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            int errorNum = savedInstanceState.getInt(ERROR_DIALOG_KEY, -1);
+            int errorNum = savedInstanceState.getInt(getString(
+                    R.string.main_activity_error_dialog_key), -1);
             if (errorNum != -1) {
                 showErrorDialog(RestClient.Error.values()[errorNum]);
             }
 
-            mTitle = savedInstanceState.getString(TITLE_KEY, getResources().getString(R.string.title_main));
+            mTitle = savedInstanceState.getString(getString(R.string.main_activity_title_key), getResources().getString(R.string.title_main));
             Fragment onScreenFragment = getFragmentManager().findFragmentById(R.id.container);
             if (onScreenFragment instanceof NewsTopicFragment) {
                 newsOverviewFragment = (NewsTopicFragment) onScreenFragment;
@@ -100,9 +100,10 @@ public class MainActivity extends Activity
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (errorDialog != null) {
-            savedInstanceState.putInt(ERROR_DIALOG_KEY, errorDialog.getReason().ordinal());
+            savedInstanceState.putInt(getString(
+                    R.string.main_activity_error_dialog_key), errorDialog.getReason().ordinal());
         }
-        savedInstanceState.putString(TITLE_KEY, mTitle);
+        savedInstanceState.putString(getString(R.string.main_activity_title_key), mTitle);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -141,7 +142,7 @@ public class MainActivity extends Activity
 
     private NewsTopicFragment setNewsTopicFragment() {
         FragmentManager fragmentManager = getFragmentManager();
-        NewsTopicFragment mFragment = NewsTopicFragment.newInstance();
+        NewsTopicFragment mFragment = NewsTopicFragment.newInstance(heading);
         fragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
                 .commit();
@@ -155,7 +156,6 @@ public class MainActivity extends Activity
         bar.setDisplayShowHomeEnabled(false);
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
         loadingBar.setVisibility(View.VISIBLE);
-        //loadingBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.progressbar_color));
 
         if (menu != null) {
             menu.clear();
@@ -229,6 +229,12 @@ public class MainActivity extends Activity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+        //TODO На эмуляторе не появляется меню при запуске приложения
     }
 
     public void refreshNews() {

@@ -263,6 +263,14 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        getActionBar().setBackgroundDrawable(
+                new ColorDrawable(this.getResources().getIntArray(
+                        (R.array.newsActionBarColorsArray))[mCurrentSelectedPosition]));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;

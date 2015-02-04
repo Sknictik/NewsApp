@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
 
-    private final Format TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
+    private final Format TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy | HH:mm");
 
     LayoutInflater mInflater = null;
 
@@ -58,6 +59,9 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
             convertView = mInflater.inflate(layoutId, null);
         }
 
+        convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT,
+                (int) context.getResources().getDimension(R.dimen.news_row_height)));
+
         TextView dateTV = (TextView) convertView.findViewById(R.id.dateTextView);
 
         ShortNewsEntry newsEntry = news.get(position);
@@ -78,6 +82,8 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
             picasso.with(context)
                     .load(newsEntry.getImage())
                     .placeholder(R.drawable.ic_stub_loading)
+                    .fit()
+                    .centerCrop()
                     .error(R.drawable.ic_stub_error)
                     .into(newsIV);
             newsIV.setVisibility(View.VISIBLE);

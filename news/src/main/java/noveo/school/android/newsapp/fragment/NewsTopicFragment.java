@@ -24,36 +24,36 @@ import android_news.newsapp.R;
 import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
+import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.library.Options;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
-public class NewsTopicFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    //ReadNewsEntryActivity keys
-    public static final String TOPIC_NUM_KEY = "noveo.school.android.newsapp.TOPIC_NUM";
-    public static final String TOPIC_KEY = "noveo.school.android.newsapp.TOPIC";
+public class NewsTopicFragment extends Fragment implements RestClientCallbackForNewsOverview{
 
-    public static final String NEWS_ENTRY_ID_KEY = "noveo.school.android.newsapp.NEWS_ID";
-    public static final String NEWS_ENTRY_DATE_KEY = "noveo.school.android.newsapp.DATE";
-    public static final String NEWS_ENTRY_TITLE_KEY = "noveo.school.android.newsapp.TITLE";
-    public static final String NEWS_IS_FAVE_KEY = "noveo.school.android.newsapp.IS_FAVE";
     final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
 
     private List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
+    private PullToRefreshLayout mPullToRefreshLayout;
+    private MainActivity.NewsTopic heading;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static NewsTopicFragment newInstance() {
+    public static NewsTopicFragment newInstance(MainActivity.NewsTopic heading) {
         NewsTopicFragment fragment = new NewsTopicFragment();
+        fragment.heading = heading;
         return fragment;
     }
 
@@ -70,16 +70,48 @@ public class NewsTopicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setRetainInstance(true);
+
+        View root = inflater.inflate(R.layout.fragment_news_grid, container, false);;
         if (gridView != null) {
-            GridView newGrid = (GridView) inflater.inflate(R.layout.fragment_news_grid, container, false);
+            GridView newGrid = (GridView) root.findViewById(R.id.news_grid);
             newGrid.setAdapter(gridView.getAdapter());
             newGrid.setOnItemClickListener(gridView.getOnItemClickListener());
             gridView = newGrid;
         }
         else {
-            gridView = (GridView) inflater.inflate(R.layout.fragment_news_grid, container, false);
+            gridView = (GridView) root.findViewById(R.id.news_grid);
+            gridView.setBackgroundResource(R.drawable.bg_empty);
         }
-        return gridView;
+
+        // Now find the PullToRefreshLayout to setup
+        mPullToRefreshLayout = (PullToRefreshLayout) root;
+
+        // Now setup the PullToRefreshLayout
+        ActionBarPullToRefresh.from(getActivity())
+                .options(Options.create()
+                        // Here we make the refresh scroll distance to 75% of the refreshable view's height
+                        .scrollDistance(0.5f)
+                        .build())
+                // Mark All Children as pullable
+                .allChildrenArePullable()
+                        // Set a OnRefreshListener
+                .listener(new OnRefreshListener() {
+                    @Override
+                    public void onRefreshStarted(View view) {
+                        RestClient.downloadNews(getThisInstance());
+                    }
+                })
+        // Finally commit the setup to our PullToRefreshLayout
+        .setup(mPullToRefreshLayout);
+
+        DefaultHeaderTransformer transformer = (DefaultHeaderTransformer) mPullToRefreshLayout
+                .getHeaderTransformer();
+        Resources res = getResources();
+        TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
+        transformer.getHeaderView().setBackgroundColor(colors.getColor(heading.ordinal(), 0));
+        transformer.setRefreshingText(getString(R.string.loading_title));
+        transformer.setProgressBarHeight(0);
+        return root;
     }
 
     public void fillNewsGrid(final MainActivity.NewsTopic heading, List<ShortNewsEntry> newsList) {
@@ -103,14 +135,22 @@ public class NewsTopicFragment extends Fragment {
             }
         }
 
+        Collections.sort(topicNews, new Comparator<ShortNewsEntry>() {
+            //If newsEntry is more late then it should be lesser one
+            @Override
+            public int compare(ShortNewsEntry o1, ShortNewsEntry o2) {
+                Long time1 = o1.getPubDate().getTime();
+                Long time2 = o2.getPubDate().getTime();
+                return (int) (time2 - time1);
+            }
+        });
+
         Resources res = getResources();
         TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
         TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
 
         Drawable faveIcon = icons.getDrawable(heading.ordinal());
         final int topicColor = colors.getColor(heading.ordinal(), 0);
-
-        GridView gridView = (GridView) getView();
 
         gridView.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
                 topicNews,
@@ -120,17 +160,17 @@ public class NewsTopicFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Intent readNewsIntent = new Intent(getActivity(), ReadNewsEntryActivity.class);
-                readNewsIntent.putExtra(TOPIC_NUM_KEY, heading.ordinal());
-                readNewsIntent.putExtra(TOPIC_KEY, getActivity().getActionBar().getTitle());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_num_key), heading.ordinal());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_key), getActivity().getActionBar().getTitle());
 
-                readNewsIntent.putExtra(NEWS_ENTRY_ID_KEY, topicNews.get(position).getId());
-                readNewsIntent.putExtra(NEWS_ENTRY_DATE_KEY, topicNews.get(position).getPubDate());
-                readNewsIntent.putExtra(NEWS_ENTRY_TITLE_KEY, topicNews.get(position).getTitle());
-                readNewsIntent.putExtra(NEWS_IS_FAVE_KEY, topicNews.get(position).isFavourite());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_id_key), topicNews.get(position).getId());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_date_key), topicNews.get(position).getPubDate());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_title_key), topicNews.get(position).getTitle());
+                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_is_fave_key), topicNews.get(position).isFavourite());
                 startActivityForResult(readNewsIntent, READ_NEWS_ENTRY_REQUEST);
             }
         });
-        getView().setBackgroundColor(Color.WHITE);
+        gridView.setBackgroundColor(Color.WHITE);
     }
 
 
@@ -140,12 +180,12 @@ public class NewsTopicFragment extends Fragment {
         if (requestCode == READ_NEWS_ENTRY_REQUEST) {
             // Make sure the request was successful
             if (resultCode == Activity.RESULT_OK) {
-                String id = data.getStringExtra(ReadNewsEntryActivity.NEWS_ENTRY_ID_RESULT_KEY);
-                boolean isFave = data.getBooleanExtra(ReadNewsEntryActivity.NEWS_IS_FAVE_RESULT_KEY, false);
+                String id = data.getStringExtra(getString(R.string.read_news_entry_activity_id_result_key));
+                boolean isFave = data.getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
                 for (ShortNewsEntry news : topicNews) {
                     if (news.getId().equals(id)) {
                         news.setFavourite(isFave);
-                        ((BaseAdapter)((GridView) getView()).getAdapter()).notifyDataSetChanged();
+                        ((BaseAdapter) gridView.getAdapter()).notifyDataSetChanged();
                         break;
                     }
                 }
@@ -153,4 +193,28 @@ public class NewsTopicFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onLoadFinished(List<ShortNewsEntry> news) {
+        if (mPullToRefreshLayout.isRefreshing()) {
+            mPullToRefreshLayout.setRefreshComplete();
+        }
+        ((MainActivity) getActivity()).onLoadFinished(news);
+    }
+
+    @Override
+    public void onLoadFailed(RestClient.Error reason) {
+        if (mPullToRefreshLayout.isRefreshing()) {
+            mPullToRefreshLayout.setRefreshComplete();
+        }
+        ((MainActivity) getActivity()).onLoadFailed(reason);
+    }
+
+    @Override
+    public void onLoadStart() {
+        ((MainActivity) getActivity()).onLoadStart();
+    }
+
+    private NewsTopicFragment getThisInstance() {
+        return NewsTopicFragment.this;
+    }
 }

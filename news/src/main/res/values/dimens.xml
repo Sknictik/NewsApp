@@ -2,7 +2,7 @@
     <dimen name="small_margin">8dp</dimen>
     <dimen name="small_padding">8dp</dimen>
     <dimen name="large_margin">16dp</dimen>
-
+    <dimen name="border_padding">1dp</dimen>
     <dimen name="divider_size">1dp</dimen>
 
     <dimen name="news_row_height">120dp</dimen>
@@ -24,9 +24,6 @@
     <dimen name="progressbar_margin_bottom">-4dp</dimen>
 
     <!--Photo image view dimensions-->
-    <dimen name="photo_width_horiz">130dp</dimen>
-    <dimen name="photo_height_horiz">160dp</dimen>
-
-    <dimen name="photo_width_vert">160dp</dimen>
-    <dimen name="photo_height_vert">160dp</dimen>
+    <dimen name="photo_width_horiz">120dp</dimen>
+    <dimen name="photo_height_horiz">120dp</dimen>
 </resources>
