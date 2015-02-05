@@ -13,7 +13,6 @@ import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
 import noveo.school.android.newsapp.activity.PhotoGalleryActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
-import noveo.school.android.newsapp.picasso.PicassoSingleton;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
@@ -23,12 +22,9 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
 
-
-
-    //private static final Logger newsEntryFragmentLogger = LoggerFactory.getLogger(NewsEntryFragment.class);
     private FullNewsEntry storedNewsEntry = null;
 
-    public NewsEntryFragment() {};
+    public NewsEntryFragment() {}
 
     public static NewsEntryFragment newInstance(FullNewsEntry newsFromDatabase) {
         NewsEntryFragment instance = new NewsEntryFragment();
@@ -71,9 +67,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
             imagesLayout.setVisibility(View.VISIBLE);
             for (int urlPos = 0; urlPos < imageUrls.length; urlPos++) {
                 ImageView photoView = new ImageView(getActivity());
-                int width, height;
-                width = (int) getResources().getDimension(R.dimen.photo_width_horiz);
-                height = (int) getResources().getDimension(R.dimen.photo_height_horiz);
+                int width = (int) getResources().getDimension(R.dimen.photo_width_horiz);
+                int height = (int) getResources().getDimension(R.dimen.photo_height_horiz);
 
                 LinearLayout.LayoutParams vp =
                         new LinearLayout.LayoutParams(width, height);
@@ -96,13 +91,14 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
                                 imageUrls);
                         viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_pos_param_key),
                                 (int) v.getTag());
+                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_topic_num_key),
+                                getArguments().getInt(getString(R.string.read_news_entry_activity_topic_num_key)));
                         startActivity(viewPhotoIntent);
                     }
                 });
 
-                Picasso picasso = PicassoSingleton.get(getActivity());
 
-                picasso.with(getActivity())
+                Picasso.with(getActivity())
                         .load(imageUrls[urlPos])
                         .placeholder(R.drawable.ic_stub_loading)
                         .fit()

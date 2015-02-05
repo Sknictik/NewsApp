@@ -1,6 +1,7 @@
 package noveo.school.android.newsapp.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
-import noveo.school.android.newsapp.picasso.PicassoSingleton;
+import com.squareup.picasso.Target;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -23,7 +26,7 @@ import java.util.List;
  * */
 
 
-public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
+public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implements Target {
 
     private final Format TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy | HH:mm");
 
@@ -34,12 +37,12 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
     private Drawable faveIcon = null;
     private int styleColor;
     private Context context;
+    private static final Logger newsGridAdapterLogger = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
 
     public ArrayAdapterForNewsGrid(Context context, int layoutResource,
                                    List<ShortNewsEntry> news,
                                    Drawable faveIcon,
-                                   int topicColor
-    ) {
+                                   int topicColor) {
         super(context, layoutResource, news);
 
         mInflater = (LayoutInflater) context.getSystemService(
@@ -74,16 +77,15 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
         newsTV.setText(newsEntry.getTitle());
         String imageUrl = newsEntry.getImage();
 
-        ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
+        final ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
 
         if (imageUrl != null) {
-            Picasso picasso = PicassoSingleton.get(context);
+            newsGridAdapterLogger.trace("Picasso", "Start loading " + newsEntry.getPubDate());
 
-            picasso.with(context)
-                    .load(newsEntry.getImage())
+            Picasso.with(context)
+                    .load(imageUrl)
+                    .noFade()
                     .placeholder(R.drawable.ic_stub_loading)
-                    .fit()
-                    .centerCrop()
                     .error(R.drawable.ic_stub_error)
                     .into(newsIV);
             newsIV.setVisibility(View.VISIBLE);
@@ -102,5 +104,20 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
         }
 
         return convertView;
+    }
+
+    @Override
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+    }
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
     }
 }

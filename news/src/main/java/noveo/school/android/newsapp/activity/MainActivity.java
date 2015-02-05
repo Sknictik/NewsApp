@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android_news.newsapp.R;
@@ -38,10 +39,7 @@ public class MainActivity extends Activity
 
     private ToastDialog errorDialog;
 
-    private Menu menu;
-
-    //SavedInstanceState keys and values
-
+    private MenuItem refreshBtn = null;
 
     private String mTitle;
 
@@ -142,7 +140,7 @@ public class MainActivity extends Activity
 
     private NewsTopicFragment setNewsTopicFragment() {
         FragmentManager fragmentManager = getFragmentManager();
-        NewsTopicFragment mFragment = NewsTopicFragment.newInstance(heading);
+        NewsTopicFragment mFragment = NewsTopicFragment.newInstance();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, mFragment)
                 .commit();
@@ -157,8 +155,8 @@ public class MainActivity extends Activity
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
         loadingBar.setVisibility(View.VISIBLE);
 
-        if (menu != null) {
-            menu.clear();
+        if (refreshBtn != null) {
+            refreshBtn.setVisible(false);
         }
     }
 
@@ -172,9 +170,10 @@ public class MainActivity extends Activity
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayUseLogoEnabled(true);
-        //bar.setTitle(mTitle);
-        if (menu != null && !menu.hasVisibleItems()) {
-            getMenuInflater().inflate(R.menu.main, menu);
+
+        if (refreshBtn != null) {
+            refreshBtn.setVisible(true);
+            invalidateOptionsMenu();
         }
 
     }
@@ -217,15 +216,13 @@ public class MainActivity extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
+
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            final int displayOptions = getActionBar().getDisplayOptions();
-            if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) == 0) {
-                getMenuInflater().inflate(R.menu.main, menu);
-            }
+
+            getMenuInflater().inflate(R.menu.main, menu);
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -233,8 +230,23 @@ public class MainActivity extends Activity
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
+        refreshBtn = menu.findItem(R.id.refresh_btn);
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            final int displayOptions = getActionBar().getDisplayOptions();
+
+            if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) != 0) {
+                refreshBtn.setVisible(false);
+            }
+            else {
+                refreshBtn.setVisible(true);
+            }
+
+            return true;
+        }
         return super.onPrepareOptionsMenu(menu);
-        //TODO На эмуляторе не появляется меню при запуске приложения
     }
 
     public void refreshNews() {

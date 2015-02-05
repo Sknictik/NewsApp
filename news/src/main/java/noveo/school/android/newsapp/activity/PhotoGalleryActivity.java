@@ -1,6 +1,10 @@
 package noveo.school.android.newsapp.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -28,7 +32,16 @@ public class PhotoGalleryActivity extends Activity {
         viewPager.setAdapter(new FullScreenImageAdapter(this,
                 imagePaths));
         String actionBarTitle = "Фото " + (pos + 1) + " из " + imagePaths.length;
-        getActionBar().setTitle(actionBarTitle);
+        ActionBar actionBar = getActionBar();
+        actionBar.setTitle(actionBarTitle);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Resources res = getResources();
+        TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
+        int topicNum = getIntent().getIntExtra(getString(R.string.news_entry_fragment_topic_num_key), 0);
+        final int color = colors.getColor(topicNum, 0);
+        actionBar.setBackgroundDrawable(new ColorDrawable(color));
+
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {

@@ -46,16 +46,15 @@
 
             <ImageView
                     android:id="@+id/newsImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/photo_width_news_grid"
+                    android:layout_height="@dimen/photo_height_news_grid"
                     android:layout_marginTop="@dimen/small_margin"
                     android:layout_marginRight="@dimen/small_margin"
                     android:background="@drawable/bg_image"
                     android:padding="@dimen/border_padding"
                     android:layout_gravity="top"
                     android:visibility="gone"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/ic_stub_loading"/>
+                    android:scaleType="centerCrop"/>
 
             <TextView
                     android:id="@+id/newsTextView"

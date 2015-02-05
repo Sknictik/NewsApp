@@ -6,6 +6,7 @@
     <dimen name="divider_size">1dp</dimen>
 
     <dimen name="news_row_height">120dp</dimen>
+    <dimen name="news_row_height_large">160dp</dimen>
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
@@ -26,4 +27,9 @@
     <!--Photo image view dimensions-->
     <dimen name="photo_width_horiz">120dp</dimen>
     <dimen name="photo_height_horiz">120dp</dimen>
+
+    <dimen name="photo_width_news_grid">80dp</dimen>
+    <dimen name="photo_width_news_grid_large">160dp</dimen>
+    <dimen name="photo_height_news_grid">80dp</dimen>
+
 </resources>

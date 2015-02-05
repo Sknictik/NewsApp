@@ -38,7 +38,7 @@ public class ReadNewsEntryActivity extends Activity {
 
     private String mTitle;
     private final Format TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
-    private Menu menu;
+    private MenuItem faveBtn;
     private ToastDialog errorDialog;
     private FullNewsEntry newsEntryObj = null;
     private static final Logger readNewsEntryActivityLogger = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
@@ -108,21 +108,20 @@ public class ReadNewsEntryActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         Intent parentIntent = getIntent();
         ActionBar actionBar = getActionBar();
         mTitle = parentIntent.getStringExtra(getString(R.string.news_topic_fragment_topic_key));
         actionBar.setTitle(mTitle);
 
-        final int displayOptions = actionBar.getDisplayOptions();
-        if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) == 0) {
-            getMenuInflater().inflate(R.menu.news_entry_menu, menu);
-
-            if (parentIntent.getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key), false)) {
-                MenuItem faveBtn = menu.getItem(0);
-                faveBtn.setIcon(R.drawable.ic_menu_star_checked);
-                faveBtn.setChecked(true);
-            }
+        getMenuInflater().inflate(R.menu.news_entry_menu, menu);
+        faveBtn = menu.findItem(R.id.fave_btn);
+        if (parentIntent.getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key), false)) {
+            faveBtn.setIcon(R.drawable.ic_menu_star_checked);
+            faveBtn.setChecked(true);
+        }
+        else {
+            faveBtn.setIcon(R.drawable.ic_menu_star_default);
+            faveBtn.setChecked(false);
         }
 
         Resources res = getResources();
@@ -131,7 +130,20 @@ public class ReadNewsEntryActivity extends Activity {
         final int color = colors.getColor(topicNum, 0);
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final int displayOptions = getActionBar().getDisplayOptions();
+        if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) == 0) {
+            faveBtn.setVisible(true);
+        }
+        else {
+            faveBtn.setVisible(false);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -216,6 +228,8 @@ public class ReadNewsEntryActivity extends Activity {
         Bundle mBundle = new Bundle();
         mBundle.putString(getString(R.string.read_news_entry_activity_news_title_param_key),
                 ((TextView) findViewById(R.id.title_tv)).getText().toString());
+        mBundle.putInt(getString(R.string.read_news_entry_activity_topic_num_key),
+                getIntent().getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0));
         fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
                 .add(R.id.container, fragment).commit();
@@ -227,6 +241,8 @@ public class ReadNewsEntryActivity extends Activity {
         Bundle mBundle = new Bundle();
         mBundle.putString(getString(R.string.read_news_entry_activity_news_title_param_key),
                 ((TextView) findViewById(R.id.title_tv)).getText().toString());
+        mBundle.putInt(getString(R.string.read_news_entry_activity_topic_num_key),
+                getIntent().getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0));
         fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
                 .add(R.id.container, fragment).commit();
@@ -239,8 +255,9 @@ public class ReadNewsEntryActivity extends Activity {
         bar.setCustomView(R.layout.actionbar_loading);
         bar.setDisplayShowHomeEnabled(false);
 
-        if (menu != null) {
-            menu.clear();
+        if (faveBtn != null) {
+            faveBtn.setVisible(false);
+            invalidateOptionsMenu();
         }
 
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
@@ -254,22 +271,14 @@ public class ReadNewsEntryActivity extends Activity {
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayUseLogoEnabled(true);
-        bar.setTitle(mTitle);
+        //bar.setTitle(mTitle);
 
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
         loadingBar.setVisibility(View.INVISIBLE);
 
-        if (menu != null && !menu.hasVisibleItems()) {
-            getMenuInflater().inflate(R.menu.news_entry_menu, menu);
-
-            //What should fave button look like
-            if (getIntent().getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key),
-                    getIntent().getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key),
-                            false))) {
-                MenuItem faveBtn = menu.getItem(0);
-                faveBtn.setIcon(R.drawable.ic_menu_star_checked);
-                faveBtn.setChecked(true);
-            }
+        if (faveBtn != null) {
+            faveBtn.setVisible(true);
+            invalidateOptionsMenu();
         }
     }
 

@@ -14,6 +14,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +28,6 @@ import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
-import uk.co.senab.actionbarpulltorefresh.library.Options;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,15 +41,14 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
     private List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
-    private PullToRefreshLayout mPullToRefreshLayout;
-    private MainActivity.NewsTopic heading;
+    private SwipeRefreshLayout mPullToRefreshLayout;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static NewsTopicFragment newInstance(MainActivity.NewsTopic heading) {
+    public static NewsTopicFragment newInstance() {
         NewsTopicFragment fragment = new NewsTopicFragment();
-        fragment.heading = heading;
         return fragment;
     }
 
@@ -84,33 +79,14 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         }
 
         // Now find the PullToRefreshLayout to setup
-        mPullToRefreshLayout = (PullToRefreshLayout) root;
+        mPullToRefreshLayout = (SwipeRefreshLayout) root;
+        mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RestClient.downloadNews(getThisInstance());
+            }
+        });
 
-        // Now setup the PullToRefreshLayout
-        ActionBarPullToRefresh.from(getActivity())
-                .options(Options.create()
-                        // Here we make the refresh scroll distance to 75% of the refreshable view's height
-                        .scrollDistance(0.5f)
-                        .build())
-                // Mark All Children as pullable
-                .allChildrenArePullable()
-                        // Set a OnRefreshListener
-                .listener(new OnRefreshListener() {
-                    @Override
-                    public void onRefreshStarted(View view) {
-                        RestClient.downloadNews(getThisInstance());
-                    }
-                })
-        // Finally commit the setup to our PullToRefreshLayout
-        .setup(mPullToRefreshLayout);
-
-        DefaultHeaderTransformer transformer = (DefaultHeaderTransformer) mPullToRefreshLayout
-                .getHeaderTransformer();
-        Resources res = getResources();
-        TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
-        transformer.getHeaderView().setBackgroundColor(colors.getColor(heading.ordinal(), 0));
-        transformer.setRefreshingText(getString(R.string.loading_title));
-        transformer.setProgressBarHeight(0);
         return root;
     }
 
@@ -196,7 +172,7 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
     @Override
     public void onLoadFinished(List<ShortNewsEntry> news) {
         if (mPullToRefreshLayout.isRefreshing()) {
-            mPullToRefreshLayout.setRefreshComplete();
+            mPullToRefreshLayout.setRefreshing(false);
         }
         ((MainActivity) getActivity()).onLoadFinished(news);
     }
@@ -204,7 +180,7 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
     @Override
     public void onLoadFailed(RestClient.Error reason) {
         if (mPullToRefreshLayout.isRefreshing()) {
-            mPullToRefreshLayout.setRefreshComplete();
+            mPullToRefreshLayout.setRefreshing(false);
         }
         ((MainActivity) getActivity()).onLoadFailed(reason);
     }

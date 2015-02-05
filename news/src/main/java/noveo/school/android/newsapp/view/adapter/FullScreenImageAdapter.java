@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
-import noveo.school.android.newsapp.picasso.PicassoSingleton;
 
 public class FullScreenImageAdapter extends PagerAdapter {
 
@@ -45,9 +44,7 @@ public class FullScreenImageAdapter extends PagerAdapter {
 
         ImageView imgDisplay = (ImageView) viewLayout.findViewById(R.id.photoView);
 
-        Picasso picasso = PicassoSingleton.get(_activity);
-
-        picasso.with(_activity)
+        Picasso.with(_activity)
                 .load(_imagePaths[position])
                 .placeholder(R.drawable.ic_stub_loading)
                 .fit()

@@ -2,58 +2,50 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/news_row_height"
-                android:paddingLeft="@dimen/small_margin"
-                android:paddingRight="@dimen/small_margin"
-                android:paddingTop="@dimen/small_margin"
-                android:paddingBottom="@dimen/small_margin"
+                android:layout_height="@dimen/news_row_height_large"
                 android:background="@drawable/bg_news"
                 tools:context=".MainActivity$NewsTopicFragment"
                 android:id="@+id/cellLayout">
 
-                <TextView
-                        android:id="@+id/dateTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:layout_marginLeft="@dimen/small_margin"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:text="Small text"
-                        android:layout_alignParentTop="true"/>
+    <TextView
+            android:id="@+id/dateTextView"
+            android:paddingTop="@dimen/small_padding"
+            android:paddingLeft="@dimen/small_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_toRightOf="@+id/newsImageView"
+            android:layout_alignParentTop="true"/>
 
-            <ImageView
-                    android:id="@+id/faveIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"/>
+    <ImageView
+            android:id="@+id/faveIcon"
+            android:paddingTop="@dimen/small_padding"
+            android:paddingRight="@dimen/small_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
 
-            <ImageView
-                    android:id="@+id/newsImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/small_margin"
-                    android:layout_marginTop="@dimen/small_margin"
-                    android:layout_marginLeft="@dimen/small_margin"
-                    android:layout_marginRight="@dimen/small_margin"
-                    android:background="@color/white"
-                    android:layout_gravity="top"
-                    android:visibility="gone"
-                    android:src="@drawable/ic_stub_loading"
-                    android:scaleType="fitXY"/>
+    <ImageView
+            android:id="@+id/newsImageView"
+            android:layout_width="@dimen/photo_width_news_grid_large"
+            android:layout_height="fill_parent"
+            android:background="@drawable/bg_image"
+            android:layout_alignParentLeft="true"
+            android:scaleType="centerCrop"/>
 
     <TextView
             android:id="@+id/newsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:paddingTop="@dimen/small_padding"
+            android:paddingLeft="@dimen/small_padding"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/black"
             android:ellipsize="marquee"
-            android:text="NEWWWWWWWWWWWWWWWWSSWSWDFzsdffgsd"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:layout_toRightOf="@+id/newsImageView"
+            android:layout_below="@+id/dateTextView"
+            android:layout_alignLeft="@+id/dateTextView"/>
 
 </RelativeLayout>

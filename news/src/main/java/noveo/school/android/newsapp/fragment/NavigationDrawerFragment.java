@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -254,20 +253,8 @@ public class NavigationDrawerFragment extends Fragment {
             inflater.inflate(R.menu.main, menu);
             showGlobalContextActionBar();
         }
-        //Set actionbar color for each news topic
-        getActionBar().setBackgroundDrawable(
-                new ColorDrawable(this.getResources().getIntArray(
-                        (R.array.newsActionBarColorsArray))[mCurrentSelectedPosition]));
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        getActionBar().setBackgroundDrawable(
-                new ColorDrawable(this.getResources().getIntArray(
-                        (R.array.newsActionBarColorsArray))[mCurrentSelectedPosition]));
     }
 
     @Override
