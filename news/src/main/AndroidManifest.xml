@@ -21,15 +21,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="noveo.school.android.newsapp.activity.ReadNewsEntryActivity"
-                  android:parentActivityName="noveo.school.android.newsapp.activity.MainActivity">
+        <activity android:name="noveo.school.android.newsapp.activity.ReadNewsEntryActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="noveo.school.android.newsapp.activity.MainActivity" />
         </activity>
 
         <activity android:name="noveo.school.android.newsapp.activity.PhotoGalleryActivity"
-                  android:parentActivityName="noveo.school.android.newsapp.activity.ReadNewsEntryActivity"
                   android:screenOrientation="landscape"
                   android:configChanges="orientation">
             <meta-data

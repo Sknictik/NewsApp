@@ -22,9 +22,7 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
 
-    private FullNewsEntry storedNewsEntry = null;
-
-    public NewsEntryFragment() {}
+    private FullNewsEntry storedNewsEntry;
 
     public static NewsEntryFragment newInstance(FullNewsEntry newsFromDatabase) {
         NewsEntryFragment instance = new NewsEntryFragment();
@@ -46,8 +44,9 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
         if (storedNewsEntry == null) {
             RestClient.downloadNewsEntry(this, intent.getStringExtra(
                     getString(R.string.news_topic_fragment_news_entry_id_key)));
+        } else {
+            onLoadFinished(storedNewsEntry);
         }
-        else onLoadFinished(storedNewsEntry);
     }
 
 

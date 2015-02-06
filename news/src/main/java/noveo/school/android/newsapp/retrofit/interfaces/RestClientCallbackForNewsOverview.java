@@ -10,9 +10,9 @@ import java.util.List;
  */
 public interface RestClientCallbackForNewsOverview {
 
-    public void onLoadFinished(List<ShortNewsEntry> news);
+    void onLoadFinished(List<ShortNewsEntry> news);
 
-    public void onLoadFailed(RestClient.Error reason);
+    void onLoadFailed(RestClient.Error reason);
 
-    public void onLoadStart();
+    void onLoadStart();
 }

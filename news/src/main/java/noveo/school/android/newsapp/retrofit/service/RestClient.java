@@ -23,16 +23,16 @@ import java.util.concurrent.Executors;
 /**
  * Created by Arseniy Nazarov on 08.01.2015.
  */
-public class RestClient {
+public final class RestClient {
 
-    private static NewsAPI REST_CLIENT;
+    private static NewsAPI apiInstance;
     private static ExecutorService mExecutorService;
-    private static final Logger restClientLogger = LoggerFactory.getLogger(RestClient.class);
+    private static final Logger REST_CLIENT_LOGGER = LoggerFactory.getLogger(RestClient.class);
 
-    public enum Error {NO_CONNECTION,
-        CONNECTION_TIMEOUT, UNKNOWN_ERROR};
+    public enum Error { NO_CONNECTION,
+        CONNECTION_TIMEOUT, UNKNOWN_ERROR }
 
-    private RestClient() {}
+    private RestClient() { }
 
     private static void setupRestClient() {
 
@@ -40,10 +40,10 @@ public class RestClient {
                 .setDateFormat("dd MMM yyyy HH:mm:ss Z")
                 .create();
 
-        String ROOT = "http://androidtraining.noveogroup.com/news/";
+        String root = "http://androidtraining.noveogroup.com/news/";
         mExecutorService = Executors.newCachedThreadPool();
         RestAdapter.Builder builder = new RestAdapter.Builder()
-                .setEndpoint(ROOT)
+                .setEndpoint(root)
                 .setConverter(new GsonConverter(gson))
                 .setExecutors(mExecutorService, new MainThreadExecutor())
                 .setLogLevel(RestAdapter.LogLevel.FULL);
@@ -51,19 +51,19 @@ public class RestClient {
         RestAdapter restAdapter = builder.build();
 
 
-        REST_CLIENT = restAdapter.create(NewsAPI.class);
+        apiInstance = restAdapter.create(NewsAPI.class);
     }
 
     public static void shutdownAll() {
         mExecutorService.shutdownNow();
-        REST_CLIENT = null;
+        apiInstance = null;
     }
 
     private static NewsAPI get() {
-        if (REST_CLIENT == null) {
+        if (apiInstance == null) {
             setupRestClient();
         }
-        return REST_CLIENT;
+        return apiInstance;
     }
 
     public static void downloadNews(final RestClientCallbackForNewsOverview caller) {
@@ -73,15 +73,14 @@ public class RestClient {
             @Override
             public void success(ShortNewsEntry[] news, Response response) {
                 caller.onLoadFinished(Arrays.asList(news));
-                restClientLogger.trace("News list downloaded from server");
+                REST_CLIENT_LOGGER.trace("News list downloaded from server");
             }
 
             @Override
             public void failure(RetrofitError error) {
-                restClientLogger.trace("Error occurred while downloading list of news");
+                REST_CLIENT_LOGGER.trace("Error occurred while downloading list of news", error);
                 Error restClientError = inspectError(error);
                 caller.onLoadFailed(restClientError);
-                error.printStackTrace();
             }
         });
     }
@@ -94,37 +93,34 @@ public class RestClient {
             public void success(FullNewsEntry news, Response response) {
 
                 caller.onLoadFinished(news);
-                restClientLogger.trace("News entry " + news.getId() + " downloaded from server");
+                REST_CLIENT_LOGGER.trace("News entry " + news.getId() + " downloaded from server");
             }
 
             @Override
             public void failure(RetrofitError error) {
-                restClientLogger.trace("Error occurred while downloading news by Id");
+                REST_CLIENT_LOGGER.trace("Error occurred while downloading news by Id", error);
                 Error restClientError = inspectError(error);
                 caller.onLoadFailed(restClientError);
-                error.printStackTrace();
             }
         });
     }
 
     private static Error inspectError(RetrofitError error) {
         switch (error.getKind()) {
-            case NETWORK: {
+            case NETWORK:
                 if (error.getCause() instanceof SocketTimeoutException) {
-                    restClientLogger.error("Timeout error");
+                    REST_CLIENT_LOGGER.error("Timeout error", error);
                     return Error.CONNECTION_TIMEOUT;
                 } else {
-                    restClientLogger.error("No connection error");
+                    REST_CLIENT_LOGGER.error("No connection error", error);
                     return Error.NO_CONNECTION;
                 }
-            }
             case HTTP:
             case CONVERSION:
             case UNEXPECTED:
-            default: {
-                restClientLogger.error("Unknown error occurred while loading news from server");
+            default:
+                REST_CLIENT_LOGGER.error("Unknown error occurred while loading news from server", error);
                 return Error.UNKNOWN_ERROR;
-            }
         }
     }
 

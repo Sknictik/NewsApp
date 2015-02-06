@@ -15,13 +15,13 @@ import noveo.school.android.newsapp.view.CheckableLinearLayout;
  */
 public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
-    LayoutInflater mInflater = null;
+    private final LayoutInflater mInflater;
 
-    private int mViewResourceId;
-    private int mTextViewResourceId;
-    private int[] highlightColors;
-    private int[] titleColors;
-    private String[] mTitles;
+    private final int mViewResourceId;
+    private final int mTextViewResourceId;
+    private final int[] highlightColors;
+    private final int[] titleColors;
+    private final String[] mTitles;
 
     public ArrayAdapterForNavigationDrawer(Context context, int resource, int textViewResourceId,
                                            String[] titles, int[] titleColors, int[] highlightColors) {
@@ -44,13 +44,13 @@ public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
             convertView = mInflater.inflate(mViewResourceId, null);
         }
 
-        TextView tv = (TextView)convertView.findViewById(mTextViewResourceId);
+        TextView tv = (TextView) convertView.findViewById(mTextViewResourceId);
         tv.setText(mTitles[position]);
 
         ((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]);
 
 
-        ImageView iv = (ImageView)convertView.findViewById(R.id.news_topic_color);
+        ImageView iv = (ImageView) convertView.findViewById(R.id.news_topic_color);
         iv.setBackgroundColor(titleColors[position]);
 
 

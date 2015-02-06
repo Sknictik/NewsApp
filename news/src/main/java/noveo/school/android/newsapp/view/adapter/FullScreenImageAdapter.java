@@ -13,39 +13,39 @@ import com.squareup.picasso.Picasso;
 
 public class FullScreenImageAdapter extends PagerAdapter {
 
-    private Activity _activity;
-    private String[] _imagePaths;
-    private LayoutInflater inflater;
+    private final Activity activity;
+    private final String[] imagePaths;
 
     // constructor
     public FullScreenImageAdapter(Activity activity,
                                   String[] imagePaths) {
-        this._activity = activity;
-        this._imagePaths = imagePaths;
+        super();
+        this.activity = activity;
+        this.imagePaths = imagePaths;
     }
 
     @Override
     public int getCount() {
-        return this._imagePaths.length;
+        return this.imagePaths.length;
     }
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == object;
+        return view.equals(object);
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
 
-        inflater = (LayoutInflater) _activity
+        LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View viewLayout = inflater.inflate(R.layout.photo_layout, container,
                 false);
 
         ImageView imgDisplay = (ImageView) viewLayout.findViewById(R.id.photoView);
 
-        Picasso.with(_activity)
-                .load(_imagePaths[position])
+        Picasso.with(activity)
+                .load(imagePaths[position])
                 .placeholder(R.drawable.ic_stub_loading)
                 .fit()
                 .centerInside()

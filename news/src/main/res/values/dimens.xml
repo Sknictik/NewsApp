@@ -1,7 +1,6 @@
 <resources>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="small_padding">8dp</dimen>
-    <dimen name="large_margin">16dp</dimen>
     <dimen name="border_padding">1dp</dimen>
     <dimen name="divider_size">1dp</dimen>
 
@@ -16,7 +15,6 @@
     <dimen name="drawer_item_height">48dp</dimen>
 
     <!--News cell dimensions-->
-    <dimen name="news_entry_height">120dp</dimen>
     <dimen name="news_entry_horizontral_vertical_spacing">8dp</dimen>
     <dimen name="news_cell_padding">8dp</dimen>
 

@@ -30,21 +30,21 @@ import org.slf4j.LoggerFactory;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Arseniy Nazarov on 22.01.2015.
  */
 public class ReadNewsEntryActivity extends Activity {
 
-    private String mTitle;
-    private final Format TIME_FORMAT = new SimpleDateFormat("yyyy.MM.dd | HH:mm");
+    private final Format timeFormat = new SimpleDateFormat("yyyy.MM.dd | HH:mm", new Locale("ru"));
     private MenuItem faveBtn;
     private ToastDialog errorDialog;
-    private FullNewsEntry newsEntryObj = null;
-    private static final Logger readNewsEntryActivityLogger = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
+    private FullNewsEntry newsEntryObj;
+    private static final Logger READ_NEWS_ENTRY_ACTIVITY_LOGGER = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
 
     //SavedInstanceState keys and values
-    private final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
+    private static final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +53,18 @@ public class ReadNewsEntryActivity extends Activity {
 
         Intent intent = getIntent();
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
         TextView dateTV = (TextView) findViewById(R.id.date_tv);
 
         Resources res = getResources();
         TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
         int topicNum = intent.getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0);
         final int color = colors.getColor(topicNum, 0);
+        colors.recycle();
         dateTV.setTextColor(color);
         Date newsDate = (Date) intent.getSerializableExtra(getString(R.string.news_topic_fragment_news_entry_date_key));
-        String stringTime = TIME_FORMAT.format(newsDate);
+        String stringTime = timeFormat.format(newsDate);
         dateTV.setText(stringTime);
 
         TextView titleTV = (TextView) findViewById(R.id.title_tv);
@@ -80,20 +83,16 @@ public class ReadNewsEntryActivity extends Activity {
                         getString(R.string.news_topic_fragment_news_entry_id_key)), "");
                 try {
                     newsEntry = gson.fromJson(jsonString, FullNewsEntry.class);
-                }
-                catch (JsonSyntaxException e) {
-                    e.printStackTrace();
+                } catch (JsonSyntaxException e) {
+                    READ_NEWS_ENTRY_ACTIVITY_LOGGER.error("Unable to convert stored json string in object.", e);
                     setNewsEntryFragment();
-                    readNewsEntryActivityLogger.error("Unable to convert stored json string in object.");
                     return;
                 }
                 setNewsEntryFragment(newsEntry);
-            }
-            else {
+            } else {
                 setNewsEntryFragment();
             }
-        }
-        else {
+        } else {
             int errorNum = savedInstanceState.getInt(ERROR_DIALOG_KEY, -1);
             if (errorNum != -1) {
                 showErrorDialog(RestClient.Error.values()[errorNum]);
@@ -102,15 +101,10 @@ public class ReadNewsEntryActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Intent parentIntent = getIntent();
         ActionBar actionBar = getActionBar();
-        mTitle = parentIntent.getStringExtra(getString(R.string.news_topic_fragment_topic_key));
+        String mTitle = parentIntent.getStringExtra(getString(R.string.news_topic_fragment_topic_key));
         actionBar.setTitle(mTitle);
 
         getMenuInflater().inflate(R.menu.news_entry_menu, menu);
@@ -118,8 +112,7 @@ public class ReadNewsEntryActivity extends Activity {
         if (parentIntent.getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key), false)) {
             faveBtn.setIcon(R.drawable.ic_menu_star_checked);
             faveBtn.setChecked(true);
-        }
-        else {
+        } else {
             faveBtn.setIcon(R.drawable.ic_menu_star_default);
             faveBtn.setChecked(false);
         }
@@ -128,6 +121,7 @@ public class ReadNewsEntryActivity extends Activity {
         TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
         int topicNum = parentIntent.getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0);
         final int color = colors.getColor(topicNum, 0);
+        colors.recycle();
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
 
         return super.onCreateOptionsMenu(menu);
@@ -138,8 +132,7 @@ public class ReadNewsEntryActivity extends Activity {
         final int displayOptions = getActionBar().getDisplayOptions();
         if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) == 0) {
             faveBtn.setVisible(true);
-        }
-        else {
+        } else {
             faveBtn.setVisible(false);
         }
 
@@ -161,12 +154,12 @@ public class ReadNewsEntryActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //TODO Сохранение картинок для кнопки "В избранное"
+        //TODO Сохранение картинок для кнопки
+        // "В избранное"
         if (id == android.R.id.home) {
             onBackPressed();
             return true;
-        }
-        else if (id == R.id.fave_btn) {
+        } else if (id == R.id.fave_btn) {
             if (newsEntryObj == null) {
                 return true;
             }
@@ -179,16 +172,15 @@ public class ReadNewsEntryActivity extends Activity {
                 item.setChecked(false);
                     prefsEditor.remove(newsEntryObj.getId());
                     intent.putExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
-                    readNewsEntryActivityLogger.trace("News object was marked for deletion");
-            }
-            else {
+                    READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for deletion");
+            } else {
                 item.setIcon(R.drawable.ic_menu_star_checked);
                 item.setChecked(true);
                     Gson gson = new Gson();
                     String jsonObj = gson.toJson(newsEntryObj);
                     prefsEditor.putString(newsEntryObj.getId(), jsonObj);
                     intent.putExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), true);
-                    readNewsEntryActivityLogger.trace("News object was marked for storage");
+                    READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for storage");
             }
             intent.putExtra(getString(R.string.read_news_entry_activity_id_result_key), newsEntryObj.getId());
             this.setResult(RESULT_OK, intent);
@@ -210,8 +202,7 @@ public class ReadNewsEntryActivity extends Activity {
         setEmptyFragment();
     }
 
-    public void onLoadStart()
-    {
+    public void onLoadStart() {
         setActionBarLoading();
     }
 
@@ -274,7 +265,7 @@ public class ReadNewsEntryActivity extends Activity {
         //bar.setTitle(mTitle);
 
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
-        loadingBar.setVisibility(View.INVISIBLE);
+        loadingBar.setVisibility(View.GONE);
 
         if (faveBtn != null) {
             faveBtn.setVisible(true);

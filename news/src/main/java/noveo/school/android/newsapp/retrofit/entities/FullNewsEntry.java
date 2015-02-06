@@ -17,9 +17,9 @@ public class FullNewsEntry extends NewsEntry {
     }
 
     public String[] getImages() {
-        if (images == null)
+        if (images == null) {
             return new String[]{};
-        else {
+        } else {
             return images;
         }
     }

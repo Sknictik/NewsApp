@@ -1,7 +1,6 @@
 package noveo.school.android.newsapp.view.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,24 +18,25 @@ import org.slf4j.LoggerFactory;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Arseniy Nazarov on 06.01.2015.
  * */
 
 
-public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implements Target {
+public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
 
-    private final Format TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy | HH:mm");
+    private final Format timeFormat = new SimpleDateFormat("dd.MM.yyyy | HH:mm", new Locale("ru"));
 
-    LayoutInflater mInflater = null;
+    private final LayoutInflater mInflater;
 
-    private int layoutId;
-    private List<ShortNewsEntry> news;
-    private Drawable faveIcon = null;
-    private int styleColor;
-    private Context context;
-    private static final Logger newsGridAdapterLogger = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
+    private final int layoutId;
+    private final List<ShortNewsEntry> news;
+    private final Drawable faveIcon;
+    private final int styleColor;
+    private final Context context;
+    private static final Logger NEWS_GRID_ADAPTER_LOGGER = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
 
     public ArrayAdapterForNewsGrid(Context context, int layoutResource,
                                    List<ShortNewsEntry> news,
@@ -69,7 +68,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implem
 
         ShortNewsEntry newsEntry = news.get(position);
 
-        String stringTime = TIME_FORMAT.format(newsEntry.getPubDate());
+        String stringTime = timeFormat.format(newsEntry.getPubDate());
         dateTV.setText(stringTime);
         dateTV.setTextColor(styleColor);
 
@@ -80,7 +79,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implem
         final ImageView newsIV = (ImageView) convertView.findViewById(R.id.newsImageView);
 
         if (imageUrl != null) {
-            newsGridAdapterLogger.trace("Picasso", "Start loading " + newsEntry.getPubDate());
+            NEWS_GRID_ADAPTER_LOGGER.trace("Picasso", "Start loading " + newsEntry.getPubDate());
 
             Picasso.with(context)
                     .load(imageUrl)
@@ -89,8 +88,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implem
                     .error(R.drawable.ic_stub_error)
                     .into(newsIV);
             newsIV.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             newsIV.setVisibility(View.GONE);
         }
         ImageView faveIV = (ImageView) convertView.findViewById(R.id.faveIcon);
@@ -98,26 +96,11 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> implem
 
         if (newsEntry.isFavourite()) {
             faveIV.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             faveIV.setVisibility(View.INVISIBLE);
         }
 
         return convertView;
     }
 
-    @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-
-    }
-
-    @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-
-    }
-
-    @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-    }
 }

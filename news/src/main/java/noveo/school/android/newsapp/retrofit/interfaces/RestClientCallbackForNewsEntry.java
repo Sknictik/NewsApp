@@ -8,10 +8,10 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  */
 public interface RestClientCallbackForNewsEntry {
 
-    public void onLoadFinished(FullNewsEntry news);
+    void onLoadFinished(FullNewsEntry news);
 
-    public void onLoadFailed(RestClient.Error reason);
+    void onLoadFailed(RestClient.Error reason);
 
-    public void onLoadStart();
+    void onLoadStart();
 
 }

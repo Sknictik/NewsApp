@@ -11,14 +11,23 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.Display;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 public class ToastDialog extends Dialog {
 
-    private RestClient.Error reason;
+    private final RestClient.Error reason;
+    private static final int MIN_BIG_SCREEN_PORTRAIT_WIDTH = 1000;
+    private static final int MIN_BIG_SCREEN_LANDSCAPE_WIDTH = 1600;
+    private static final double BIG_SCREEN_PART = 0.66;
 
     public ToastDialog(Context context, RestClient.Error reason) {
         super(context);
@@ -27,18 +36,24 @@ public class ToastDialog extends Dialog {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(android.content.Context.
-                        LAYOUT_INFLATER_SERVICE);
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View layout = inflater.inflate(R.layout.toast_dialog_layout, null);
 
         String errMsg;
 
-        switch(reason) {
-            case NO_CONNECTION: {errMsg = getContext().getString(R.string.no_connection_error); break;}
-            case CONNECTION_TIMEOUT: {errMsg = getContext().getString(R.string.timeout_error); break;}
+        switch (reason) {
+            case NO_CONNECTION:
+                errMsg = getContext().getString(R.string.no_connection_error);
+                break;
+            case CONNECTION_TIMEOUT:
+                errMsg = getContext().getString(R.string.timeout_error);
+                break;
+
+            case UNKNOWN_ERROR:
             default:
-            case UNKNOWN_ERROR: {errMsg = getContext().getString(R.string.unknown_error); break;}
+                errMsg = getContext().getString(R.string.unknown_error);
+                break;
         }
 
         TextView tv = (TextView) layout.findViewById(R.id.errorMsg);
@@ -58,16 +73,14 @@ public class ToastDialog extends Dialog {
         Point size = new Point();
         display.getSize(size);
 
-        final int MIN_BIG_SCREEN_PORTRAIT_WIDTH = 1000;
-        final int MIN_BIG_SCREEN_LANDSCAPE_WIDTH = 1600;
         //If device has wide of a phablet or more display dialog in 2/3rd of the screen
         if (size.x >= MIN_BIG_SCREEN_PORTRAIT_WIDTH && context.getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_PORTRAIT ||
-                size.x >= MIN_BIG_SCREEN_LANDSCAPE_WIDTH && context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT
+                || size.x >= MIN_BIG_SCREEN_LANDSCAPE_WIDTH && context.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
-            layout.getLayoutParams().width = (int) (size.x * 0.66);
-        }
-        else {
+
+            layout.getLayoutParams().width = (int) (size.x * BIG_SCREEN_PART);
+        } else {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }

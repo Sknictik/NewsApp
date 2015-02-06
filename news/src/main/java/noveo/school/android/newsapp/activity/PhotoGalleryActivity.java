@@ -40,6 +40,7 @@ public class PhotoGalleryActivity extends Activity {
         TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
         int topicNum = getIntent().getIntExtra(getString(R.string.news_entry_fragment_topic_num_key), 0);
         final int color = colors.getColor(topicNum, 0);
+        colors.recycle();
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -61,13 +62,8 @@ public class PhotoGalleryActivity extends Activity {
         });
         viewPager.setCurrentItem(pos);
 
-        ((TextView)findViewById(R.id.photoCaption)).setText(getIntent().getStringExtra(
+        ((TextView) findViewById(R.id.photoCaption)).setText(getIntent().getStringExtra(
                 getString(R.string.news_entry_fragment_caption_param_key)));
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override

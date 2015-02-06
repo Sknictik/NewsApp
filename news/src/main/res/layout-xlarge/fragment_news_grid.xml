@@ -13,7 +13,6 @@
              android:horizontalSpacing="@dimen/news_entry_horizontral_vertical_spacing"
              android:padding="@dimen/news_cell_padding"
              android:stretchMode="columnWidth"
-             android:background="@android:color/white"
              android:gravity="center">
     </GridView>
 

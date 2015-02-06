@@ -5,27 +5,27 @@ import java.util.Date;
 /**
  * Created by Arseniy Nazarov on 15.01.2015.
  */
-public abstract class NewsEntry {
+public class NewsEntry {
 
-    protected String id;
-    protected Date pubDate;
-    protected String title;
-    protected String[] topics;
-    protected boolean isFavourite = false;
+    private String id;
+    private Date pubDate;
+    private String title;
+    private String[] topics;
+    private boolean isFavouriteNews;
 
-    public NewsEntry(String id, Date pubDate, String title, String[] topics) {
+    protected NewsEntry(String id, Date pubDate, String title, String[] topics) {
         this.id = id;
         this.pubDate = pubDate;
         this.title = title;
         this.topics = topics;
     }
 
-    public NewsEntry(String id, Date pubDate, String title, String[] topics, boolean isFavourite) {
+    protected NewsEntry(String id, Date pubDate, String title, String[] topics, boolean isFavouriteNews) {
         this.id = id;
         this.pubDate = pubDate;
         this.title = title;
         this.topics = topics;
-        this.isFavourite = isFavourite;
+        this.isFavouriteNews = isFavouriteNews;
     }
 
     public String getId() {
@@ -60,8 +60,12 @@ public abstract class NewsEntry {
         this.topics = topics;
     }
 
-    public boolean isFavourite() { return isFavourite; }
+    public boolean isFavourite() {
+        return isFavouriteNews;
+    }
 
-    public void setFavourite(boolean isFavourite) { this.isFavourite = isFavourite; }
+    public void setIsFavourite(boolean isFavourite) {
+        this.isFavouriteNews = isFavourite;
+    }
 
 }

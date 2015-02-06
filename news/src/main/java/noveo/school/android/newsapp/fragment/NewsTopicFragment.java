@@ -35,11 +35,11 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class NewsTopicFragment extends Fragment implements RestClientCallbackForNewsOverview{
+public class NewsTopicFragment extends Fragment implements RestClientCallbackForNewsOverview {
 
-    final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
+    private static final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
 
-    private List<ShortNewsEntry> topicNews = new ArrayList<>();
+    private final List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
     private SwipeRefreshLayout mPullToRefreshLayout;
 
@@ -48,11 +48,7 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
      * number.
      */
     public static NewsTopicFragment newInstance() {
-        NewsTopicFragment fragment = new NewsTopicFragment();
-        return fragment;
-    }
-
-    public NewsTopicFragment() {
+        return new NewsTopicFragment();
     }
 
     @Override
@@ -66,14 +62,13 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
                              Bundle savedInstanceState) {
         setRetainInstance(true);
 
-        View root = inflater.inflate(R.layout.fragment_news_grid, container, false);;
+        View root = inflater.inflate(R.layout.fragment_news_grid, container, false);
         if (gridView != null) {
             GridView newGrid = (GridView) root.findViewById(R.id.news_grid);
             newGrid.setAdapter(gridView.getAdapter());
             newGrid.setOnItemClickListener(gridView.getOnItemClickListener());
             gridView = newGrid;
-        }
-        else {
+        } else {
             gridView = (GridView) root.findViewById(R.id.news_grid);
             gridView.setBackgroundResource(R.drawable.bg_empty);
         }
@@ -99,11 +94,10 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         for (ShortNewsEntry entry : newsList) {
             String[] topics = entry.getTopics();
             for (String topic : topics) {
-                if (heading.name().toLowerCase().equals(topic)) {
+                if (heading.name().equalsIgnoreCase(topic)) {
                     //Check if news is stored in local database if so mark them as favourite
-                    if (mPrefs.getString(entry.getId(), null) != null)
-                    {
-                        entry.setFavourite(true);
+                    if (mPrefs.getString(entry.getId(), null) != null) {
+                        entry.setIsFavourite(true);
                     }
                     topicNews.add(entry);
                     break;
@@ -127,6 +121,9 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
         Drawable faveIcon = icons.getDrawable(heading.ordinal());
         final int topicColor = colors.getColor(heading.ordinal(), 0);
+
+        icons.recycle();
+        colors.recycle();
 
         gridView.setAdapter(new ArrayAdapterForNewsGrid(getActivity(), R.layout.news_cell,
                 topicNews,
@@ -153,17 +150,15 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == READ_NEWS_ENTRY_REQUEST) {
+        if (requestCode == READ_NEWS_ENTRY_REQUEST && resultCode == Activity.RESULT_OK) {
             // Make sure the request was successful
-            if (resultCode == Activity.RESULT_OK) {
-                String id = data.getStringExtra(getString(R.string.read_news_entry_activity_id_result_key));
-                boolean isFave = data.getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
-                for (ShortNewsEntry news : topicNews) {
-                    if (news.getId().equals(id)) {
-                        news.setFavourite(isFave);
-                        ((BaseAdapter) gridView.getAdapter()).notifyDataSetChanged();
-                        break;
-                    }
+            String id = data.getStringExtra(getString(R.string.read_news_entry_activity_id_result_key));
+            boolean isFave = data.getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
+            for (ShortNewsEntry news : topicNews) {
+                if (news.getId().equals(id)) {
+                    news.setIsFavourite(isFave);
+                    ((BaseAdapter) gridView.getAdapter()).notifyDataSetChanged();
+                    break;
                 }
             }
         }

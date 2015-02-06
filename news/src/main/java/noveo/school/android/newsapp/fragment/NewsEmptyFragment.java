@@ -15,8 +15,6 @@ public class NewsEmptyFragment extends Fragment {
 
     private boolean isBackgroundWhite;
 
-    public NewsEmptyFragment() {}
-
     public static NewsEmptyFragment newInstance(boolean isBackgroundWhite) {
         NewsEmptyFragment instance = new NewsEmptyFragment();
         instance.isBackgroundWhite = isBackgroundWhite;
@@ -27,14 +25,18 @@ public class NewsEmptyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setRetainInstance(true);
-        return inflater.inflate(R.layout.fragment_news_empty_layout, container, false);
+        View root = inflater.inflate(R.layout.fragment_news_empty_layout, container, false);
+        if (isBackgroundWhite) {
+            root.setBackgroundColor(Color.WHITE);
+        } else {
+            root.setBackgroundResource(R.drawable.bg_empty);
+        }
+        return root;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        if (isBackgroundWhite) {
-            getView().setBackgroundColor(Color.WHITE);
-        }
+
     }
 
 }

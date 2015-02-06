@@ -32,24 +32,25 @@ public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, RestClientCallbackForNewsOverview {
 
     /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     * Fragment managing the behaviors, interactions and presentation
+     * of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private NewsTopicFragment newsOverviewFragment;
 
     private ToastDialog errorDialog;
 
-    private MenuItem refreshBtn = null;
+    private MenuItem refreshBtn;
 
     private String mTitle;
 
-    public enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
+    public enum NewsTopic { MAIN, POLICY, TECH, CULTURE, SPORT }
 
     private static NewsTopic heading = NewsTopic.MAIN;
 
     private static List<ShortNewsEntry> newsList = new ArrayList<>();
 
-    private static final Logger newsOverviewActivityLogger = LoggerFactory.getLogger(MainActivity.class);
+    private static final Logger NEWS_OVERVIEW_ACTIVITY_LOGGER = LoggerFactory.getLogger(MainActivity.class);
 
 
     @Override
@@ -71,8 +72,7 @@ public class MainActivity extends Activity
             if (onScreenFragment instanceof NewsTopicFragment) {
                 newsOverviewFragment = (NewsTopicFragment) onScreenFragment;
             }
-        }
-        else {
+        } else {
             mTitle = getTitle().toString();
             newsOverviewFragment = setNewsTopicFragment();
         }
@@ -82,7 +82,7 @@ public class MainActivity extends Activity
 
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        mNavigationDrawerFragment.setup(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
@@ -90,7 +90,7 @@ public class MainActivity extends Activity
 
     @Override
     public void onDestroy() {
-        newsOverviewActivityLogger.trace("Cancel all tasks");
+        NEWS_OVERVIEW_ACTIVITY_LOGGER.trace("Cancel all tasks");
         RestClient.shutdownAll();
         super.onDestroy();
     }
@@ -108,7 +108,7 @@ public class MainActivity extends Activity
 
     @Override
     public void onBackPressed() {
-        if (mNavigationDrawerFragment.isDrawerOpen()){
+        if (mNavigationDrawerFragment.isDrawerOpen()) {
             mNavigationDrawerFragment.closeDrawer(Gravity.LEFT);
         } else {
             super.onBackPressed();
@@ -123,7 +123,7 @@ public class MainActivity extends Activity
 
         refreshActionBar();
 
-        if (!newsList.isEmpty() && newsOverviewFragment.isAdded()){
+        if (!newsList.isEmpty() && newsOverviewFragment.isAdded()) {
             newsOverviewFragment.fillNewsGrid(heading, newsList);
         }
 
@@ -192,8 +192,7 @@ public class MainActivity extends Activity
         restoreActionBar();
         if (!newsList.isEmpty()) {
             newsOverviewFragment.fillNewsGrid(heading, newsList);
-        }
-        else if (!(getFragmentManager().findFragmentById(R.id.container)
+        } else if (!(getFragmentManager().findFragmentById(R.id.container)
                 instanceof NewsEmptyFragment)) {
             setEmptyFragment();
         }
@@ -208,8 +207,8 @@ public class MainActivity extends Activity
 
     public void refreshActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(this.getResources().getIntArray(
-                (R.array.newsActionBarColorsArray))[heading.ordinal()]));
+        actionBar.setBackgroundDrawable(new ColorDrawable(
+                getResources().getIntArray(R.array.newsActionBarColorsArray)[heading.ordinal()]));
         actionBar.setTitle(mTitle);
     }
 
@@ -239,8 +238,7 @@ public class MainActivity extends Activity
 
             if ((displayOptions & ActionBar.DISPLAY_SHOW_CUSTOM) != 0) {
                 refreshBtn.setVisible(false);
-            }
-            else {
+            } else {
                 refreshBtn.setVisible(true);
             }
 
@@ -253,8 +251,7 @@ public class MainActivity extends Activity
         if (!(getFragmentManager().findFragmentById(R.id.container)
                 instanceof NewsTopicFragment)) {
             newsOverviewFragment = setNewsTopicFragment();
-        }
-        else {
+        } else {
             RestClient.downloadNews(this);
         }
     }

@@ -9,7 +9,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:numColumns="1"
-             android:background="@drawable/bg_empty"
              android:verticalSpacing="@dimen/news_entry_horizontral_vertical_spacing"
              android:horizontalSpacing="@dimen/news_entry_horizontral_vertical_spacing"
              android:padding="@dimen/news_cell_padding"
