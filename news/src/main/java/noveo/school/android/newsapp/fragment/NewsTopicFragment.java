@@ -133,9 +133,17 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Intent readNewsIntent = new Intent(getActivity(), ReadNewsEntryActivity.class);
+                // CR#1 Good practice when you build Intent in Activity which you need to show.
+                // It makes the code more readable.
+                // You should create static method in ReadNewsEntryActivity which create Intent
+                // (like newInstance method in fragments)
+
+
                 readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_num_key), heading.ordinal());
                 readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_key), getActivity().getActionBar().getTitle());
 
+                // CR#1 too enough parameters. please make topicNews as Serializable or Parcelable
+                // and pass just one object to the activity
                 readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_id_key), topicNews.get(position).getId());
                 readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_date_key), topicNews.get(position).getPubDate());
                 readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_title_key), topicNews.get(position).getTitle());

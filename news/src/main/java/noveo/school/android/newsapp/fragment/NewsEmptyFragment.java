@@ -15,6 +15,7 @@ public class NewsEmptyFragment extends Fragment {
 
     private boolean isBackgroundWhite;
 
+    // CR#1 use Fragment.setArguments(Bundle) for passing args into fragment
     public static NewsEmptyFragment newInstance(boolean isBackgroundWhite) {
         NewsEmptyFragment instance = new NewsEmptyFragment();
         instance.isBackgroundWhite = isBackgroundWhite;

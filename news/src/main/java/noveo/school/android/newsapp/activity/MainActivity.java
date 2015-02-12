@@ -46,8 +46,9 @@ public class MainActivity extends Activity
 
     public enum NewsTopic { MAIN, POLICY, TECH, CULTURE, SPORT }
 
+    // CR#1 It's bad practice. Please do singleton class which holds shared state (e.g. current topic, cached news)
+    // And after that you don't need to pass the current topic in ReadNewsEntryActivity
     private static NewsTopic heading = NewsTopic.MAIN;
-
     private static List<ShortNewsEntry> newsList = new ArrayList<>();
 
     private static final Logger NEWS_OVERVIEW_ACTIVITY_LOGGER = LoggerFactory.getLogger(MainActivity.class);
@@ -61,12 +62,13 @@ public class MainActivity extends Activity
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
+            // CR#1 keys for bundle or intents should be a public static constants
             int errorNum = savedInstanceState.getInt(getString(
                     R.string.main_activity_error_dialog_key), -1);
             if (errorNum != -1) {
                 showErrorDialog(RestClient.Error.values()[errorNum]);
             }
-
+            // CR#1 (move the key to class constant)
             mTitle = savedInstanceState.getString(getString(R.string.main_activity_title_key), getResources().getString(R.string.title_main));
             Fragment onScreenFragment = getFragmentManager().findFragmentById(R.id.container);
             if (onScreenFragment instanceof NewsTopicFragment) {

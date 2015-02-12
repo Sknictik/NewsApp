@@ -24,6 +24,7 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     private FullNewsEntry storedNewsEntry;
 
+    // CR#1 the same as NewsEmptyFragment
     public static NewsEntryFragment newInstance(FullNewsEntry newsFromDatabase) {
         NewsEntryFragment instance = new NewsEntryFragment();
         instance.storedNewsEntry = newsFromDatabase;

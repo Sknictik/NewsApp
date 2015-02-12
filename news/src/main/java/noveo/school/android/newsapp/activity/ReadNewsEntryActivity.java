@@ -35,6 +35,7 @@ import java.util.Locale;
 /**
  * Created by Arseniy Nazarov on 22.01.2015.
  */
+// CR#1 the same as MainActivity (move the key to class constant)
 public class ReadNewsEntryActivity extends Activity {
 
     private final Format timeFormat = new SimpleDateFormat("yyyy.MM.dd | HH:mm", new Locale("ru"));

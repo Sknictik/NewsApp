@@ -16,6 +16,7 @@ import noveo.school.android.newsapp.view.adapter.FullScreenImageAdapter;
 /**
  * Created by Arseniy Nazarov on 03.02.2015.
  */
+// CR#1 the same as MainActivity (move the key to class constant)
 public class PhotoGalleryActivity extends Activity {
 
     @Override
@@ -31,6 +32,8 @@ public class PhotoGalleryActivity extends Activity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new FullScreenImageAdapter(this,
                 imagePaths));
+        // CR#1 extract hardcoded strings into xml resources
+        // And use string formatting (getString(int resId, Object... formatArgs))
         String actionBarTitle = "Фото " + (pos + 1) + " из " + imagePaths.length;
         ActionBar actionBar = getActionBar();
         actionBar.setTitle(actionBarTitle);
@@ -51,6 +54,7 @@ public class PhotoGalleryActivity extends Activity {
 
             @Override
             public void onPageSelected(int i) {
+                // CR#1 the same
                 String actionBarTitle = "Фото " + (i + 1) + " из " + imagePaths.length;
                 getActionBar().setTitle(Html.fromHtml(actionBarTitle));
             }
