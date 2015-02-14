@@ -21,7 +21,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import noveo.school.android.newsapp.fragment.NewsEmptyFragment;
 import noveo.school.android.newsapp.fragment.NewsEntryFragment;
+import noveo.school.android.newsapp.fragment.NewsTopicFragment;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
+import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.ToastDialog;
 import org.slf4j.Logger;
@@ -35,17 +37,34 @@ import java.util.Locale;
 /**
  * Created by Arseniy Nazarov on 22.01.2015.
  */
-// CR#1 the same as MainActivity (move the key to class constant)
+// TODO CR#1 (DONE) the same as MainActivity (move the key to class constant)
 public class ReadNewsEntryActivity extends Activity {
 
+    public static final String ID_RESULT_KEY = "noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_ID_RESULT";
+    public static final String IS_FAVE_RESULT_KEY = "noveo.school.android.newsapp.ReadNewsEntryActivity.IS_FAVE_RESULT";
+    public static final String NEWS_TITLE_PARAM_KEY = "noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_TITLE_PARAM";
+    public static final String NEWS_ENTRY_PARCELABLE_PARAM_KEY =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_ENTRY_PARCELABLE_PARAM";
+    public static final String NEWS_ENTRY_ID_PARAM_KEY =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_ENTRY_ID_PARAM";
+    private static final String SAVED_IS_FAVE_KEY =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.SAVED_IS_FAVE";
+    private static final String SAVED_IS_RESULT_SET_KEY =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.SAVED_IS_RESULT_SET";
+    private static final Logger READ_NEWS_ENTRY_ACTIVITY_LOGGER = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
+    //SavedInstanceState keys and values
+    private static final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
     private final Format timeFormat = new SimpleDateFormat("yyyy.MM.dd | HH:mm", new Locale("ru"));
     private MenuItem faveBtn;
     private ToastDialog errorDialog;
+    private ShortNewsEntry passedNewsEntryObj;
     private FullNewsEntry newsEntryObj;
-    private static final Logger READ_NEWS_ENTRY_ACTIVITY_LOGGER = LoggerFactory.getLogger(ReadNewsEntryActivity.class);
+    private boolean isFavourite;
+    private boolean isResultSet = false;
 
-    //SavedInstanceState keys and values
-    private static final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.ERROR_DIALOG";
+    public static Intent newIntent() {
+        return new Intent();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,28 +79,27 @@ public class ReadNewsEntryActivity extends Activity {
 
         Resources res = getResources();
         TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
-        int topicNum = intent.getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0);
-        final int color = colors.getColor(topicNum, 0);
+
+        final int color = colors.getColor(MainActivity.getCurrentTopic().ordinal(), 0);
         colors.recycle();
         dateTV.setTextColor(color);
-        Date newsDate = (Date) intent.getSerializableExtra(getString(R.string.news_topic_fragment_news_entry_date_key));
+        passedNewsEntryObj = intent.getParcelableExtra(NewsTopicFragment.NEWS_ENTRY_KEY);
+        Date newsDate = passedNewsEntryObj.getPubDate();
         String stringTime = timeFormat.format(newsDate);
         dateTV.setText(stringTime);
 
         TextView titleTV = (TextView) findViewById(R.id.title_tv);
-        titleTV.setText(intent.getStringExtra(getString(R.string.news_topic_fragment_news_entry_title_key)));
+        titleTV.setText(passedNewsEntryObj.getTitle());
 
         // Check whether we're restoring a previously destroyed instance
         if (savedInstanceState == null) {
-            if (intent.getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key),
-                    intent.getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key),
-                            false))) {
-                SharedPreferences mPrefs = getSharedPreferences(getString(R.string.shared_preference_name),
+            if (intent.getBooleanExtra(IS_FAVE_RESULT_KEY, passedNewsEntryObj.isFavourite())) {
+                isFavourite = true;
+                SharedPreferences mPrefs = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME,
                         Context.MODE_PRIVATE);
                 Gson gson = new Gson();
                 FullNewsEntry newsEntry;
-                String jsonString = mPrefs.getString(intent.getStringExtra(
-                        getString(R.string.news_topic_fragment_news_entry_id_key)), "");
+                String jsonString = mPrefs.getString(passedNewsEntryObj.getId(), "");
                 try {
                     newsEntry = gson.fromJson(jsonString, FullNewsEntry.class);
                 } catch (JsonSyntaxException e) {
@@ -91,9 +109,15 @@ public class ReadNewsEntryActivity extends Activity {
                 }
                 setNewsEntryFragment(newsEntry);
             } else {
+                isFavourite = false;
                 setNewsEntryFragment();
             }
         } else {
+            isFavourite = savedInstanceState.getBoolean(SAVED_IS_FAVE_KEY);
+            //If result was already set and configuration change happened set result again as it is likely reset.
+            isResultSet = savedInstanceState.getBoolean(SAVED_IS_RESULT_SET_KEY);
+            this.setResult(RESULT_OK, intent);
+
             int errorNum = savedInstanceState.getInt(ERROR_DIALOG_KEY, -1);
             if (errorNum != -1) {
                 showErrorDialog(RestClient.Error.values()[errorNum]);
@@ -103,14 +127,14 @@ public class ReadNewsEntryActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Intent parentIntent = getIntent();
+        //Intent parentIntent = getIntent();
         ActionBar actionBar = getActionBar();
-        String mTitle = parentIntent.getStringExtra(getString(R.string.news_topic_fragment_topic_key));
+        String mTitle = getResources().getStringArray(R.array.topics)[MainActivity.getCurrentTopic().ordinal()];
         actionBar.setTitle(mTitle);
 
         getMenuInflater().inflate(R.menu.news_entry_menu, menu);
         faveBtn = menu.findItem(R.id.fave_btn);
-        if (parentIntent.getBooleanExtra(getString(R.string.news_topic_fragment_news_is_fave_key), false)) {
+        if (isFavourite) {
             faveBtn.setIcon(R.drawable.ic_menu_star_checked);
             faveBtn.setChecked(true);
         } else {
@@ -120,7 +144,7 @@ public class ReadNewsEntryActivity extends Activity {
 
         Resources res = getResources();
         TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
-        int topicNum = parentIntent.getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0);
+        int topicNum = MainActivity.getCurrentTopic().ordinal();
         final int color = colors.getColor(topicNum, 0);
         colors.recycle();
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
@@ -145,6 +169,8 @@ public class ReadNewsEntryActivity extends Activity {
         if (errorDialog != null) {
             savedInstanceState.putInt(ERROR_DIALOG_KEY, errorDialog.getReason().ordinal());
         }
+        savedInstanceState.putBoolean(SAVED_IS_FAVE_KEY, isFavourite);
+        savedInstanceState.putBoolean(SAVED_IS_RESULT_SET_KEY, isResultSet);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -164,33 +190,35 @@ public class ReadNewsEntryActivity extends Activity {
             if (newsEntryObj == null) {
                 return true;
             }
-            SharedPreferences mPrefs = getSharedPreferences(getString(R.string.shared_preference_name),
+            SharedPreferences mPrefs = getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME,
                     MODE_PRIVATE);
             SharedPreferences.Editor prefsEditor = mPrefs.edit();
-            Intent intent = this.getIntent();
+            Intent intent = getIntent();
             if (item.isChecked()) {
                 item.setIcon(R.drawable.ic_menu_star_default);
                 item.setChecked(false);
-                    prefsEditor.remove(newsEntryObj.getId());
-                    intent.putExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
-                    READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for deletion");
+                prefsEditor.remove(newsEntryObj.getId());
+                intent.putExtra(IS_FAVE_RESULT_KEY, false);
+                READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for deletion");
+                isFavourite = false;
             } else {
                 item.setIcon(R.drawable.ic_menu_star_checked);
                 item.setChecked(true);
-                    Gson gson = new Gson();
-                    String jsonObj = gson.toJson(newsEntryObj);
-                    prefsEditor.putString(newsEntryObj.getId(), jsonObj);
-                    intent.putExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), true);
-                    READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for storage");
+                Gson gson = new Gson();
+                String jsonObj = gson.toJson(newsEntryObj);
+                prefsEditor.putString(newsEntryObj.getId(), jsonObj);
+                intent.putExtra(IS_FAVE_RESULT_KEY, true);
+                READ_NEWS_ENTRY_ACTIVITY_LOGGER.trace("News object was marked for storage");
+                isFavourite = true;
             }
-            intent.putExtra(getString(R.string.read_news_entry_activity_id_result_key), newsEntryObj.getId());
+            intent.putExtra(ID_RESULT_KEY, newsEntryObj.getId());
             this.setResult(RESULT_OK, intent);
+            isResultSet = true;
             prefsEditor.apply();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     public void onLoadFinished(FullNewsEntry news) {
         newsEntryObj = news;
@@ -209,8 +237,13 @@ public class ReadNewsEntryActivity extends Activity {
 
     private void setEmptyFragment() {
         FragmentManager fragmentManager = getFragmentManager();
+
+        NewsEmptyFragment mFragment = NewsEmptyFragment.newInstance();
+        Bundle params = new Bundle();
+        params.putBoolean(NewsEmptyFragment.IS_BACKGROUND_WHITE_PARAM, true);
+        mFragment.setArguments(params);
         fragmentManager.beginTransaction()
-                .replace(R.id.container, NewsEmptyFragment.newInstance(true))
+                .replace(R.id.container, mFragment)
                 .commit();
     }
 
@@ -218,10 +251,9 @@ public class ReadNewsEntryActivity extends Activity {
         FragmentManager fragmentManager = getFragmentManager();
         NewsEntryFragment fragment = new NewsEntryFragment();
         Bundle mBundle = new Bundle();
-        mBundle.putString(getString(R.string.read_news_entry_activity_news_title_param_key),
+        mBundle.putString(NEWS_TITLE_PARAM_KEY,
                 ((TextView) findViewById(R.id.title_tv)).getText().toString());
-        mBundle.putInt(getString(R.string.read_news_entry_activity_topic_num_key),
-                getIntent().getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0));
+        mBundle.putString(NEWS_ENTRY_ID_PARAM_KEY, passedNewsEntryObj.getId());
         fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
                 .add(R.id.container, fragment).commit();
@@ -229,17 +261,16 @@ public class ReadNewsEntryActivity extends Activity {
 
     private void setNewsEntryFragment(FullNewsEntry newsEntry) {
         FragmentManager fragmentManager = getFragmentManager();
-        NewsEntryFragment fragment = NewsEntryFragment.newInstance(newsEntry);
+        NewsEntryFragment fragment = NewsEntryFragment.newInstance();
         Bundle mBundle = new Bundle();
-        mBundle.putString(getString(R.string.read_news_entry_activity_news_title_param_key),
+        mBundle.putParcelable(NEWS_ENTRY_PARCELABLE_PARAM_KEY, newsEntry);
+        mBundle.putString(ReadNewsEntryActivity.NEWS_TITLE_PARAM_KEY,
                 ((TextView) findViewById(R.id.title_tv)).getText().toString());
-        mBundle.putInt(getString(R.string.read_news_entry_activity_topic_num_key),
-                getIntent().getIntExtra(getString(R.string.news_topic_fragment_topic_num_key), 0));
+        mBundle.putString(NEWS_ENTRY_ID_PARAM_KEY, passedNewsEntryObj.getId());
         fragment.setArguments(mBundle);
         fragmentManager.beginTransaction()
                 .add(R.id.container, fragment).commit();
     }
-
 
     private void setActionBarLoading() {
         ActionBar bar = getActionBar();
@@ -263,7 +294,6 @@ public class ReadNewsEntryActivity extends Activity {
         bar.setDisplayShowHomeEnabled(true);
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayUseLogoEnabled(true);
-        //bar.setTitle(mTitle);
 
         ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
         loadingBar.setVisibility(View.GONE);

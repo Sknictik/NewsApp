@@ -25,14 +25,12 @@ import java.util.concurrent.Executors;
  */
 public final class RestClient {
 
+    private static final Logger REST_CLIENT_LOGGER = LoggerFactory.getLogger(RestClient.class);
     private static NewsAPI apiInstance;
     private static ExecutorService mExecutorService;
-    private static final Logger REST_CLIENT_LOGGER = LoggerFactory.getLogger(RestClient.class);
 
-    public enum Error { NO_CONNECTION,
-        CONNECTION_TIMEOUT, UNKNOWN_ERROR }
-
-    private RestClient() { }
+    private RestClient() {
+    }
 
     private static void setupRestClient() {
 
@@ -67,9 +65,9 @@ public final class RestClient {
     }
 
     public static void downloadNews(final RestClientCallbackForNewsOverview caller) {
-       caller.onLoadStart();
+        caller.onLoadStart();
 
-       RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
+        RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
             @Override
             public void success(ShortNewsEntry[] news, Response response) {
                 caller.onLoadFinished(Arrays.asList(news));
@@ -122,6 +120,11 @@ public final class RestClient {
                 REST_CLIENT_LOGGER.error("Unknown error occurred while loading news from server", error);
                 return Error.UNKNOWN_ERROR;
         }
+    }
+
+    public enum Error {
+        NO_CONNECTION,
+        CONNECTION_TIMEOUT, UNKNOWN_ERROR
     }
 
 }

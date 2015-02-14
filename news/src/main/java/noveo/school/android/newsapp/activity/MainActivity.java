@@ -31,28 +31,26 @@ import java.util.List;
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, RestClientCallbackForNewsOverview {
 
+    public static final String ERROR_DIALOG_KEY = "noveo.school.android.newsapp.MainActivity.ERROR_DIALOG";
+    public static final String TITLE_KEY = "noveo.school.android.newsapp.MainActivity.TITLE";
+    public static final String SHARED_PREFERENCE_NAME = "noveo.school.android.newsapp.NEWS_APP";
+    private static final Logger NEWS_OVERVIEW_ACTIVITY_LOGGER = LoggerFactory.getLogger(MainActivity.class);
+    //TODO CR#1 (DONE) It's bad practice. Please do singleton class which holds shared state (e.g. current topic, cached news)
+    // And after that you don't need to pass the current topic in ReadNewsEntryActivity
+    private static NewsTopic heading = NewsTopic.MAIN;
+    private static List<ShortNewsEntry> newsList = new ArrayList<>();
     /**
      * Fragment managing the behaviors, interactions and presentation
      * of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private NewsTopicFragment newsOverviewFragment;
-
     private ToastDialog errorDialog;
-
     private MenuItem refreshBtn;
 
-    private String mTitle;
-
-    public enum NewsTopic { MAIN, POLICY, TECH, CULTURE, SPORT }
-
-    // CR#1 It's bad practice. Please do singleton class which holds shared state (e.g. current topic, cached news)
-    // And after that you don't need to pass the current topic in ReadNewsEntryActivity
-    private static NewsTopic heading = NewsTopic.MAIN;
-    private static List<ShortNewsEntry> newsList = new ArrayList<>();
-
-    private static final Logger NEWS_OVERVIEW_ACTIVITY_LOGGER = LoggerFactory.getLogger(MainActivity.class);
-
+    public static NewsTopic getCurrentTopic() {
+        return heading;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,20 +60,19 @@ public class MainActivity extends Activity
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            // CR#1 keys for bundle or intents should be a public static constants
-            int errorNum = savedInstanceState.getInt(getString(
-                    R.string.main_activity_error_dialog_key), -1);
+            // TODO CR#1(DONE) keys for bundle or intents should be a public static constants
+            int errorNum = savedInstanceState.getInt(ERROR_DIALOG_KEY, -1);
             if (errorNum != -1) {
                 showErrorDialog(RestClient.Error.values()[errorNum]);
             }
-            // CR#1 (move the key to class constant)
-            mTitle = savedInstanceState.getString(getString(R.string.main_activity_title_key), getResources().getString(R.string.title_main));
+            // TODO CR#1(DONE) (move the key to class constant)
+            heading = NewsTopic.values()[savedInstanceState.getInt(TITLE_KEY, 0)];
             Fragment onScreenFragment = getFragmentManager().findFragmentById(R.id.container);
             if (onScreenFragment instanceof NewsTopicFragment) {
                 newsOverviewFragment = (NewsTopicFragment) onScreenFragment;
             }
         } else {
-            mTitle = getTitle().toString();
+            heading = NewsTopic.MAIN;
             newsOverviewFragment = setNewsTopicFragment();
         }
         refreshActionBar();
@@ -100,10 +97,10 @@ public class MainActivity extends Activity
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (errorDialog != null) {
-            savedInstanceState.putInt(getString(
-                    R.string.main_activity_error_dialog_key), errorDialog.getReason().ordinal());
+            savedInstanceState.putInt(ERROR_DIALOG_KEY,
+                    errorDialog.getReason().ordinal());
         }
-        savedInstanceState.putString(getString(R.string.main_activity_title_key), mTitle);
+        savedInstanceState.putInt(TITLE_KEY, heading.ordinal());
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -117,23 +114,24 @@ public class MainActivity extends Activity
         }
     }
 
-
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         heading = NewsTopic.values()[position];
-        mTitle = getResources().getStringArray(R.array.topics)[position];
 
         refreshActionBar();
 
         if (!newsList.isEmpty() && newsOverviewFragment.isAdded()) {
-            newsOverviewFragment.fillNewsGrid(heading, newsList);
+            newsOverviewFragment.fillNewsGrid(newsList);
         }
 
     }
 
     private void setEmptyFragment() {
         FragmentManager fragmentManager = getFragmentManager();
-        NewsEmptyFragment emptyFragment = new NewsEmptyFragment();
+        NewsEmptyFragment emptyFragment = NewsEmptyFragment.newInstance();
+        Bundle mBundle = new Bundle();
+        mBundle.putBoolean(NewsEmptyFragment.IS_BACKGROUND_WHITE_PARAM, false);
+        emptyFragment.setArguments(mBundle);
 
         fragmentManager.beginTransaction()
                 .replace(R.id.container, emptyFragment)
@@ -185,7 +183,7 @@ public class MainActivity extends Activity
         newsList = news;
         restoreActionBar();
         if (newsOverviewFragment.isAdded()) {
-            newsOverviewFragment.fillNewsGrid(heading, newsList);
+            newsOverviewFragment.fillNewsGrid(newsList);
         }
     }
 
@@ -193,7 +191,7 @@ public class MainActivity extends Activity
     public void onLoadFailed(RestClient.Error reason) {
         restoreActionBar();
         if (!newsList.isEmpty()) {
-            newsOverviewFragment.fillNewsGrid(heading, newsList);
+            newsOverviewFragment.fillNewsGrid(newsList);
         } else if (!(getFragmentManager().findFragmentById(R.id.container)
                 instanceof NewsEmptyFragment)) {
             setEmptyFragment();
@@ -211,9 +209,8 @@ public class MainActivity extends Activity
         ActionBar actionBar = getActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(
                 getResources().getIntArray(R.array.newsActionBarColorsArray)[heading.ordinal()]));
-        actionBar.setTitle(mTitle);
+        actionBar.setTitle(getResources().getStringArray(R.array.topics)[heading.ordinal()]);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -278,4 +275,6 @@ public class MainActivity extends Activity
 
         errorDialog.show();
     }
+
+    public enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
 }

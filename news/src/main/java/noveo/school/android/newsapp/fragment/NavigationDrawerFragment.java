@@ -11,12 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android_news.newsapp.R;
@@ -122,7 +117,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
 
-
         return mDrawerListView;
     }
 
@@ -133,6 +127,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void closeDrawer(int gravity) {
         mDrawerLayout.closeDrawer(gravity);
     }
+
     /**
      * Users of this fragment must call this
      * method to set up the navigation drawer interactions.

@@ -1,12 +1,27 @@
 package noveo.school.android.newsapp.retrofit.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
- * Created by Arseniy Nazarov on 23.01.2015.
+ * This object is an entity containing full information about single news entry downloaded from server.
  */
-public class FullNewsEntry extends NewsEntry {
+public class FullNewsEntry extends NewsEntry implements Parcelable {
 
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<FullNewsEntry> CREATOR = new Parcelable.Creator<FullNewsEntry>() {
+        @Override
+        public FullNewsEntry createFromParcel(Parcel in) {
+            return new FullNewsEntry(in);
+        }
+
+        @Override
+        public FullNewsEntry[] newArray(int size) {
+            return new FullNewsEntry[size];
+        }
+    };
     private String[] images;
     private String html;
 
@@ -14,6 +29,14 @@ public class FullNewsEntry extends NewsEntry {
         super(id, pubDate, title, topics);
         this.images = images;
         this.html = html;
+    }
+
+    protected FullNewsEntry(Parcel in) {
+        super(in);
+        images = new String[in.readInt()];
+        in.readStringArray(images);
+        html = in.readString();
+
     }
 
     public String[] getImages() {
@@ -36,4 +59,16 @@ public class FullNewsEntry extends NewsEntry {
         this.html = html;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(images.length);
+        dest.writeStringArray(images);
+        dest.writeString(html);
+    }
 }

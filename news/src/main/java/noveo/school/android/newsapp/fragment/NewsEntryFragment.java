@@ -21,14 +21,16 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
  * Created by Arseniy Nazarov on 23.01.2015.
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
+    public static final String CAPTION_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.CAPTION_PARAM";
+    public static final String IMAGE_PATHS_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.IMAGE_PATHS_PARAM";
+    public static final String POSITION_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.POSITION_PARAM";
 
-    private FullNewsEntry storedNewsEntry;
+    private FullNewsEntry storedNewsEntry = null;
+    private String newsEntryId = null;
 
-    // CR#1 the same as NewsEmptyFragment
-    public static NewsEntryFragment newInstance(FullNewsEntry newsFromDatabase) {
-        NewsEntryFragment instance = new NewsEntryFragment();
-        instance.storedNewsEntry = newsFromDatabase;
-        return instance;
+    // TODO (DONE) CR#1 the same as NewsEmptyFragment
+    public static NewsEntryFragment newInstance() {
+        return new NewsEntryFragment();
     }
 
     @Override
@@ -41,10 +43,16 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Intent intent = getActivity().getIntent();
+        if (newsEntryId == null) {
+            newsEntryId = getArguments().getString(
+                    ReadNewsEntryActivity.NEWS_ENTRY_ID_PARAM_KEY);
+        }
         if (storedNewsEntry == null) {
-            RestClient.downloadNewsEntry(this, intent.getStringExtra(
-                    getString(R.string.news_topic_fragment_news_entry_id_key)));
+            storedNewsEntry = getArguments().getParcelable(
+                    ReadNewsEntryActivity.NEWS_ENTRY_PARCELABLE_PARAM_KEY);
+        }
+        if (storedNewsEntry == null) {
+            RestClient.downloadNewsEntry(this, newsEntryId);
         } else {
             onLoadFinished(storedNewsEntry);
         }
@@ -84,15 +92,10 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
                     @Override
                     public void onClick(View v) {
                         Intent viewPhotoIntent = new Intent(getActivity(), PhotoGalleryActivity.class);
-                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_caption_param_key),
-                                getArguments().getString(
-                                        getString(R.string.read_news_entry_activity_news_title_param_key)));
-                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_image_paths_param_key),
-                                imageUrls);
-                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_pos_param_key),
-                                (int) v.getTag());
-                        viewPhotoIntent.putExtra(getString(R.string.news_entry_fragment_topic_num_key),
-                                getArguments().getInt(getString(R.string.read_news_entry_activity_topic_num_key)));
+                        viewPhotoIntent.putExtra(CAPTION_PARAM_KEY,
+                                getArguments().getString(ReadNewsEntryActivity.NEWS_TITLE_PARAM_KEY));
+                        viewPhotoIntent.putExtra(IMAGE_PATHS_PARAM_KEY, imageUrls);
+                        viewPhotoIntent.putExtra(POSITION_PARAM_KEY, (int) v.getTag());
                         startActivity(viewPhotoIntent);
                     }
                 });

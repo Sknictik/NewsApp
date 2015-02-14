@@ -9,17 +9,18 @@ import android.view.ViewGroup;
 import android_news.newsapp.R;
 
 /**
- * Created by Arseniy Nazarov on 21.01.2015.
+ * Empty fragment is shown when there is nothing to display to user for whatever reason
  */
 public class NewsEmptyFragment extends Fragment {
 
-    private boolean isBackgroundWhite;
+    public static final String IS_BACKGROUND_WHITE_PARAM =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.IS_BACKGROUND_WHITE_PARAM";
 
-    // CR#1 use Fragment.setArguments(Bundle) for passing args into fragment
-    public static NewsEmptyFragment newInstance(boolean isBackgroundWhite) {
-        NewsEmptyFragment instance = new NewsEmptyFragment();
-        instance.isBackgroundWhite = isBackgroundWhite;
-        return instance;
+    private boolean isBackgroundWhite = false;
+
+    // TODO CR#1 (DONE) use Fragment.setArguments(Bundle) for passing args into fragment
+    public static NewsEmptyFragment newInstance() {
+        return new NewsEmptyFragment();
     }
 
     @Override
@@ -27,6 +28,9 @@ public class NewsEmptyFragment extends Fragment {
                              Bundle savedInstanceState) {
         setRetainInstance(true);
         View root = inflater.inflate(R.layout.fragment_news_empty_layout, container, false);
+        if (!isBackgroundWhite) {
+            isBackgroundWhite = getArguments().getBoolean(IS_BACKGROUND_WHITE_PARAM);
+        }
         if (isBackgroundWhite) {
             root.setBackgroundColor(Color.WHITE);
         } else {

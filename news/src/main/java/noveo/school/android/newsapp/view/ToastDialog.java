@@ -11,23 +11,17 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.Display;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 public class ToastDialog extends Dialog {
 
-    private final RestClient.Error reason;
     private static final int MIN_BIG_SCREEN_PORTRAIT_WIDTH = 1000;
     private static final int MIN_BIG_SCREEN_LANDSCAPE_WIDTH = 1600;
     private static final double BIG_SCREEN_PART = 0.66;
+    private final RestClient.Error reason;
 
     public ToastDialog(Context context, RestClient.Error reason) {
         super(context);
@@ -77,7 +71,7 @@ public class ToastDialog extends Dialog {
         if (size.x >= MIN_BIG_SCREEN_PORTRAIT_WIDTH && context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_PORTRAIT
                 || size.x >= MIN_BIG_SCREEN_LANDSCAPE_WIDTH && context.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE) {
+                == Configuration.ORIENTATION_LANDSCAPE) {
 
             layout.getLayoutParams().width = (int) (size.x * BIG_SCREEN_PART);
         } else {

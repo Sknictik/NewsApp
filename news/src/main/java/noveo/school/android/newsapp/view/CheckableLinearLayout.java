@@ -40,22 +40,22 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
         return checkbox != null && checkbox.isChecked();
     }
 
-    public void setHighlightColor(int highlightColor) {
-        this.highlightColor = highlightColor;
-    }
-
     @Override
     public void setChecked(boolean checked) {
         if (checked) {
             checkbox.setBackgroundColor(highlightColor);
         } else {
             StateListDrawable states = new StateListDrawable();
-            states.addState(new int[] {android.R.attr.state_pressed},
+            states.addState(new int[]{android.R.attr.state_pressed},
                     new ColorDrawable(highlightColor));
-            states.addState(new int[] {android.R.attr.state_checked},
+            states.addState(new int[]{android.R.attr.state_checked},
                     new ColorDrawable(highlightColor));
             checkbox.setBackgroundDrawable(states);
         }
+    }
+
+    public void setHighlightColor(int highlightColor) {
+        this.highlightColor = highlightColor;
     }
 
     @Override

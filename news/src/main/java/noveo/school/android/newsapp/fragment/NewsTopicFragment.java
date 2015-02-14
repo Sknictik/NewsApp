@@ -1,7 +1,7 @@
 package noveo.school.android.newsapp.fragment;
 
 /**
- * Created by Arseniy Nazarov on 21.01.2015.
+ * This fragment contains all news entries related to current topic chosen by user
  */
 
 import android.app.Activity;
@@ -37,15 +37,18 @@ import java.util.List;
 
 public class NewsTopicFragment extends Fragment implements RestClientCallbackForNewsOverview {
 
+    public static final String NEWS_ENTRY_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY";
     private static final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
-
+    /*public static final String NEWS_ENTRY_ID_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_ID";
+    public static final String NEWS_ENTRY_DATE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_DATE";
+    public static final String NEWS_ENTRY_TITLE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_TITLE";
+    public static final String NEWS_ENTRY_IS_FAVE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_IS_FAVE";*/
     private final List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
     private SwipeRefreshLayout mPullToRefreshLayout;
 
     /**
-     * Returns a new instance of this fragment for the given section
-     * number.
+     * Returns a new instance of this fragment.
      */
     public static NewsTopicFragment newInstance() {
         return new NewsTopicFragment();
@@ -85,11 +88,13 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         return root;
     }
 
-    public void fillNewsGrid(final MainActivity.NewsTopic heading, List<ShortNewsEntry> newsList) {
-        SharedPreferences mPrefs = getActivity().getSharedPreferences(getString(R.string.shared_preference_name),
+    public void fillNewsGrid(List<ShortNewsEntry> newsList) {
+        SharedPreferences mPrefs = getActivity().getSharedPreferences(MainActivity.SHARED_PREFERENCE_NAME,
                 Context.MODE_PRIVATE);
 
         topicNews.clear();
+
+        final MainActivity.NewsTopic heading = MainActivity.getCurrentTopic();
 
         for (ShortNewsEntry entry : newsList) {
             String[] topics = entry.getTopics();
@@ -132,22 +137,17 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent readNewsIntent = new Intent(getActivity(), ReadNewsEntryActivity.class);
-                // CR#1 Good practice when you build Intent in Activity which you need to show.
+                Intent readNewsIntent = ReadNewsEntryActivity.newIntent();
+                readNewsIntent.setClass(getActivity(), ReadNewsEntryActivity.class);
+                // TODO CR#1 (DONE?) Good practice when you build Intent in Activity which you need to show.
                 // It makes the code more readable.
                 // You should create static method in ReadNewsEntryActivity which create Intent
                 // (like newInstance method in fragments)
 
 
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_num_key), heading.ordinal());
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_topic_key), getActivity().getActionBar().getTitle());
-
-                // CR#1 too enough parameters. please make topicNews as Serializable or Parcelable
+                // TODO CR#1 (DONE) too enough parameters. please make topicNews as Serializable or Parcelable
                 // and pass just one object to the activity
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_id_key), topicNews.get(position).getId());
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_date_key), topicNews.get(position).getPubDate());
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_entry_title_key), topicNews.get(position).getTitle());
-                readNewsIntent.putExtra(getString(R.string.news_topic_fragment_news_is_fave_key), topicNews.get(position).isFavourite());
+                readNewsIntent.putExtra(NEWS_ENTRY_KEY, topicNews.get(position));
                 startActivityForResult(readNewsIntent, READ_NEWS_ENTRY_REQUEST);
             }
         });
@@ -160,8 +160,8 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         // Check which request we're responding to
         if (requestCode == READ_NEWS_ENTRY_REQUEST && resultCode == Activity.RESULT_OK) {
             // Make sure the request was successful
-            String id = data.getStringExtra(getString(R.string.read_news_entry_activity_id_result_key));
-            boolean isFave = data.getBooleanExtra(getString(R.string.read_news_entry_activity_news_is_fave_result_key), false);
+            String id = data.getStringExtra(ReadNewsEntryActivity.ID_RESULT_KEY);
+            boolean isFave = data.getBooleanExtra(ReadNewsEntryActivity.IS_FAVE_RESULT_KEY, false);
             for (ShortNewsEntry news : topicNews) {
                 if (news.getId().equals(id)) {
                     news.setIsFavourite(isFave);

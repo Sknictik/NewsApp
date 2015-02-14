@@ -22,21 +22,19 @@ import java.util.Locale;
 
 /**
  * Created by Arseniy Nazarov on 06.01.2015.
- * */
+ */
 
 
 public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
 
+    private static final Logger NEWS_GRID_ADAPTER_LOGGER = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
     private final Format timeFormat = new SimpleDateFormat("dd.MM.yyyy | HH:mm", new Locale("ru"));
-
     private final LayoutInflater mInflater;
-
     private final int layoutId;
     private final List<ShortNewsEntry> news;
     private final Drawable faveIcon;
     private final int styleColor;
     private final Context context;
-    private static final Logger NEWS_GRID_ADAPTER_LOGGER = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
 
     public ArrayAdapterForNewsGrid(Context context, int layoutResource,
                                    List<ShortNewsEntry> news,
