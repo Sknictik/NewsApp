@@ -7,7 +7,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 
 /**
- * Created by Arseniy Nazarov on 08.01.2015.
+ * Retrofit API class
  */
 public interface NewsAPI {
     @GET("/getAll")

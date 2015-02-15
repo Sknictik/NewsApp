@@ -10,9 +10,7 @@ import android.widget.TextView;
 import android_news.newsapp.R;
 import noveo.school.android.newsapp.view.CheckableLinearLayout;
 
-/**
- * Created by Arseniy Nazarov on 25.12.2014.
- */
+
 public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
     private final LayoutInflater mInflater;
@@ -52,7 +50,6 @@ public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
         ImageView iv = (ImageView) convertView.findViewById(R.id.news_topic_color);
         iv.setBackgroundColor(titleColors[position]);
-
 
         return convertView;
     }

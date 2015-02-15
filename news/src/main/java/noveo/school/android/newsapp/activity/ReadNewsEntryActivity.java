@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by Arseniy Nazarov on 22.01.2015.
+ * Activity used to display full information about single news entry.
  */
 // TODO CR#1 (DONE) the same as MainActivity (move the key to class constant)
 public class ReadNewsEntryActivity extends Activity {
@@ -173,6 +173,15 @@ public class ReadNewsEntryActivity extends Activity {
         savedInstanceState.putBoolean(SAVED_IS_RESULT_SET_KEY, isResultSet);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (errorDialog != null) {
+            errorDialog.dismiss();
+            errorDialog = null;
+        }
+        super.onDestroy();
     }
 
     @Override

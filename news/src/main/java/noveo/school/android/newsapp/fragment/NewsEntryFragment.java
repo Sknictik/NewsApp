@@ -10,15 +10,21 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android_news.newsapp.R;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.activity.PhotoGalleryActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 /**
- * Created by Arseniy Nazarov on 23.01.2015.
+ * This fragment displays news description and images related
+ * to a single news entry. It is used in ReadNewsEntryActivity.
  */
 public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
     public static final String CAPTION_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.CAPTION_PARAM";
@@ -43,6 +49,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        MainActivity.getBusInstance().register(this);
+
         if (newsEntryId == null) {
             newsEntryId = getArguments().getString(
                     ReadNewsEntryActivity.NEWS_ENTRY_ID_PARAM_KEY);
@@ -54,14 +62,20 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
         if (storedNewsEntry == null) {
             RestClient.downloadNewsEntry(this, newsEntryId);
         } else {
-            onLoadFinished(storedNewsEntry);
+            onLoadFinished(new OttoFinishLoadNewsEntry(storedNewsEntry));
         }
     }
 
+    @Override
+    public void onDetach() {
+        MainActivity.getBusInstance().unregister(this);
+        super.onDestroy();
+    }
 
     @Override
-    public void onLoadFinished(FullNewsEntry news) {
-        storedNewsEntry = news;
+    @Subscribe
+    public void onLoadFinished(OttoFinishLoadNewsEntry event) {
+        storedNewsEntry = event.getNewsEntry();
 
         //If fragment is not attached discard data
         if (!isAdded()) {
@@ -70,7 +84,7 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
         WebView newsWV = (WebView) getView().findViewById(R.id.news_wv);
         LinearLayout imagesLayout = (LinearLayout) getView().findViewById(R.id.imagesContainerLayout);
 
-        final String[] imageUrls = news.getImages();
+        final String[] imageUrls = storedNewsEntry.getImages();
         if (imageUrls.length != 0) {
             imagesLayout.setVisibility(View.VISIBLE);
             for (int urlPos = 0; urlPos < imageUrls.length; urlPos++) {
@@ -112,18 +126,20 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
             }
         }
 
-        newsWV.loadData(news.getHtml(), "text/html; charset=UTF-8", null);
+        newsWV.loadData(storedNewsEntry.getHtml(), "text/html; charset=UTF-8", null);
 
-        ((ReadNewsEntryActivity) getActivity()).onLoadFinished(news);
+        ((ReadNewsEntryActivity) getActivity()).onLoadFinished(storedNewsEntry);
     }
 
     @Override
-    public void onLoadFailed(RestClient.Error reason) {
-        ((ReadNewsEntryActivity) getActivity()).onLoadFailed(reason);
+    @Subscribe
+    public void onLoadFailed(OttoFailLoadNewsEntry event) {
+        ((ReadNewsEntryActivity) getActivity()).onLoadFailed(event.getError());
     }
 
     @Override
-    public void onLoadStart() {
+    @Subscribe
+    public void onLoadStart(OttoStartLoadNewsEntry event) {
         ((ReadNewsEntryActivity) getActivity()).onLoadStart();
     }
 

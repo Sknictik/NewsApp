@@ -4,16 +4,14 @@
 
     <ImageView
           android:id="@+id/news_topic_color"
-          android:layout_width="@dimen/zero"
-          android:layout_height="match_parent"
-          android:layout_weight="0.05"/>
+          android:layout_width="@dimen/nav_drawer_width"
+          android:layout_height="match_parent"/>
 
     <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
           android:id="@+id/news_topic_title"
-          android:layout_width="@dimen/zero"
+          android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="center_vertical"
-          android:layout_weight="0.95"
           android:minHeight="@dimen/drawer_item_height"
           android:paddingLeft="@dimen/small_margin"
           android:textAppearance="@android:style/TextAppearance.Medium"

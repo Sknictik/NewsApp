@@ -14,10 +14,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android_news.newsapp.R;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import noveo.school.android.newsapp.fragment.NavigationDrawerFragment;
 import noveo.school.android.newsapp.fragment.NewsEmptyFragment;
 import noveo.school.android.newsapp.fragment.NewsTopicFragment;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.ToastDialog;
@@ -27,7 +32,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+ * Starting activity which shows all news related to current chosen topic.
+ */
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, RestClientCallbackForNewsOverview {
 
@@ -39,6 +46,7 @@ public class MainActivity extends Activity
     // And after that you don't need to pass the current topic in ReadNewsEntryActivity
     private static NewsTopic heading = NewsTopic.MAIN;
     private static List<ShortNewsEntry> newsList = new ArrayList<>();
+    private static Bus busInstance;
     /**
      * Fragment managing the behaviors, interactions and presentation
      * of the navigation drawer.
@@ -52,11 +60,20 @@ public class MainActivity extends Activity
         return heading;
     }
 
+    public static Bus getBusInstance() {
+        if (busInstance == null) {
+            busInstance = new Bus();
+        }
+        return busInstance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        //Register for server download events
+        getBusInstance().register(this);
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
@@ -89,8 +106,13 @@ public class MainActivity extends Activity
 
     @Override
     public void onDestroy() {
-        NEWS_OVERVIEW_ACTIVITY_LOGGER.trace("Cancel all tasks");
-        RestClient.shutdownAll();
+        //NEWS_OVERVIEW_ACTIVITY_LOGGER.trace("Cancel all tasks");
+        //RestClient.shutdownAll();
+        getBusInstance().unregister(this);
+        if (errorDialog != null) {
+            errorDialog.dismiss();
+            errorDialog = null;
+        }
         super.onDestroy();
     }
 
@@ -179,8 +201,9 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public void onLoadFinished(List<ShortNewsEntry> news) {
-        newsList = news;
+    @Subscribe
+    public void onLoadFinished(OttoFinishLoadNews event) {
+        newsList = event.getNews();
         restoreActionBar();
         if (newsOverviewFragment.isAdded()) {
             newsOverviewFragment.fillNewsGrid(newsList);
@@ -188,7 +211,8 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public void onLoadFailed(RestClient.Error reason) {
+    @Subscribe
+    public void onLoadFailed(OttoFailLoadNews event) {
         restoreActionBar();
         if (!newsList.isEmpty()) {
             newsOverviewFragment.fillNewsGrid(newsList);
@@ -197,11 +221,12 @@ public class MainActivity extends Activity
             setEmptyFragment();
         }
 
-        showErrorDialog(reason);
+        showErrorDialog(event.getError());
     }
 
     @Override
-    public void onLoadStart() {
+    @Subscribe
+    public void onLoadStart(OttoStartLoadNews event) {
         setLoadingState();
     }
 
@@ -276,5 +301,5 @@ public class MainActivity extends Activity
         errorDialog.show();
     }
 
-    public enum NewsTopic {MAIN, POLICY, TECH, CULTURE, SPORT}
+    public enum NewsTopic { MAIN, POLICY, TECH, CULTURE, SPORT }
 }

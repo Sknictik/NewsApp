@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android_news.newsapp.R;
 
 /**
- * Empty fragment is shown when there is nothing to display to user for whatever reason
+ * Empty fragment is shown when there is nothing to display
+ * to user for whatever reason. It can be used in either MainActivity or ReadNewsEntryActivity.
  */
 public class NewsEmptyFragment extends Fragment {
 

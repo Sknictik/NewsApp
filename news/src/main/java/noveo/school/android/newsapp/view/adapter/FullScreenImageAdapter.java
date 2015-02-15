@@ -11,6 +11,10 @@ import android.widget.RelativeLayout;
 import android_news.newsapp.R;
 import com.squareup.picasso.Picasso;
 
+/*
+ * ArrayAdapter used in PhotoGalleryActivity
+ */
+
 public class FullScreenImageAdapter extends PagerAdapter {
 
     private final Activity activity;

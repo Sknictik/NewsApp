@@ -1,7 +1,8 @@
 package noveo.school.android.newsapp.fragment;
 
 /**
- * This fragment contains all news entries related to current topic chosen by user
+ * This fragment contains all news entries related to
+ * current topic chosen by user. This fragment used in MainActivity
  */
 
 import android.app.Activity;
@@ -22,9 +23,13 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android_news.newsapp.R;
+import com.squareup.otto.Subscribe;
 import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
@@ -39,10 +44,6 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
     public static final String NEWS_ENTRY_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY";
     private static final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
-    /*public static final String NEWS_ENTRY_ID_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_ID";
-    public static final String NEWS_ENTRY_DATE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_DATE";
-    public static final String NEWS_ENTRY_TITLE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_TITLE";
-    public static final String NEWS_ENTRY_IS_FAVE_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY_IS_FAVE";*/
     private final List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
     private SwipeRefreshLayout mPullToRefreshLayout;
@@ -173,24 +174,27 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
     }
 
     @Override
-    public void onLoadFinished(List<ShortNewsEntry> news) {
+    @Subscribe
+    public void onLoadFinished(OttoFinishLoadNews event) {
         if (mPullToRefreshLayout.isRefreshing()) {
             mPullToRefreshLayout.setRefreshing(false);
         }
-        ((MainActivity) getActivity()).onLoadFinished(news);
+        ((MainActivity) getActivity()).onLoadFinished(event);
     }
 
     @Override
-    public void onLoadFailed(RestClient.Error reason) {
+    @Subscribe
+    public void onLoadFailed(OttoFailLoadNews event) {
         if (mPullToRefreshLayout.isRefreshing()) {
             mPullToRefreshLayout.setRefreshing(false);
         }
-        ((MainActivity) getActivity()).onLoadFailed(reason);
+        ((MainActivity) getActivity()).onLoadFailed(event);
     }
 
     @Override
-    public void onLoadStart() {
-        ((MainActivity) getActivity()).onLoadStart();
+    @Subscribe
+    public void onLoadStart(OttoStartLoadNews event) {
+        ((MainActivity) getActivity()).onLoadStart(event);
     }
 
     private NewsTopicFragment getThisInstance() {

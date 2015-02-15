@@ -10,7 +10,7 @@ import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 
 /*
- * This class is useful for using inside of
+ * This class is used inside of
   * ListView that needs to have checkable items.
  */
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
@@ -46,8 +46,6 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
             checkbox.setBackgroundColor(highlightColor);
         } else {
             StateListDrawable states = new StateListDrawable();
-            states.addState(new int[]{android.R.attr.state_pressed},
-                    new ColorDrawable(highlightColor));
             states.addState(new int[]{android.R.attr.state_checked},
                     new ColorDrawable(highlightColor));
             checkbox.setBackgroundDrawable(states);

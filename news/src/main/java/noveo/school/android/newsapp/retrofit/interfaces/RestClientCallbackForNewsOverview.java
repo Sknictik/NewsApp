@@ -1,18 +1,17 @@
 package noveo.school.android.newsapp.retrofit.interfaces;
 
-import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
-import noveo.school.android.newsapp.retrofit.service.RestClient;
-
-import java.util.List;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
 
 /**
- * Created by Arseniy Nazarov on 01.02.2015.
+ * Interface for the entity which wants an array of news entry descriptions downloaded from server.
  */
 public interface RestClientCallbackForNewsOverview {
 
-    void onLoadFinished(List<ShortNewsEntry> news);
+    void onLoadFinished(OttoFinishLoadNews event);
 
-    void onLoadFailed(RestClient.Error reason);
+    void onLoadFailed(OttoFailLoadNews event);
 
-    void onLoadStart();
+    void onLoadStart(OttoStartLoadNews event);
 }

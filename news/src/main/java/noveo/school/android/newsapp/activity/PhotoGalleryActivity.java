@@ -15,7 +15,7 @@ import noveo.school.android.newsapp.fragment.NewsEntryFragment;
 import noveo.school.android.newsapp.view.adapter.FullScreenImageAdapter;
 
 /**
- * Created by Arseniy Nazarov on 03.02.2015.
+ * This activity starts when user touch images in ReadNewsEntryActivity. It shows them full screen sized.
  */
 // TODO CR#1(DONE) the same as MainActivity (move the key to class constant)
 public class PhotoGalleryActivity extends Activity {

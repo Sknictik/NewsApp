@@ -10,13 +10,14 @@
                     android:id="@+id/errorMsg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_connection_error"
+                    android:text="@string/timeout_error"
                     android:textColor="@android:color/white"
                     android:drawableLeft="@drawable/ic_dialog_alert"
                     android:singleLine="true"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
-                    android:paddingRight="@dimen/small_padding"/>
+                    android:paddingRight="@dimen/small_padding"
+                    android:textSize="@dimen/error_text_size"/>
 
     <View
             android:layout_width="@dimen/divider_size"

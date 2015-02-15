@@ -2,8 +2,16 @@ package noveo.school.android.newsapp.retrofit.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.otto.Bus;
+import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
 import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import org.slf4j.Logger;
@@ -21,7 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by Arseniy Nazarov on 08.01.2015.
+ * This class contains logic used to download news from server.
  */
 public final class RestClient {
 
@@ -52,10 +60,10 @@ public final class RestClient {
         apiInstance = restAdapter.create(NewsAPI.class);
     }
 
-    public static void shutdownAll() {
+    /*public static void shutdownAll() {
         mExecutorService.shutdownNow();
         apiInstance = null;
-    }
+    }*/
 
     private static NewsAPI get() {
         if (apiInstance == null) {
@@ -65,12 +73,16 @@ public final class RestClient {
     }
 
     public static void downloadNews(final RestClientCallbackForNewsOverview caller) {
-        caller.onLoadStart();
+        final Bus mBus = MainActivity.getBusInstance();
+
+        mBus.post(new OttoStartLoadNews());
+        //caller.onLoadStart();
 
         RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
             @Override
             public void success(ShortNewsEntry[] news, Response response) {
-                caller.onLoadFinished(Arrays.asList(news));
+                mBus.post(new OttoFinishLoadNews(Arrays.asList(news)));
+                //caller.onLoadFinished(Arrays.asList(news));
                 REST_CLIENT_LOGGER.trace("News list downloaded from server");
             }
 
@@ -78,19 +90,22 @@ public final class RestClient {
             public void failure(RetrofitError error) {
                 REST_CLIENT_LOGGER.trace("Error occurred while downloading list of news", error);
                 Error restClientError = inspectError(error);
-                caller.onLoadFailed(restClientError);
+                mBus.post(new OttoFailLoadNews(restClientError));
+                //caller.onLoadFailed(restClientError);
             }
         });
     }
 
     public static void downloadNewsEntry(final RestClientCallbackForNewsEntry caller, String newsId) {
-        caller.onLoadStart();
+        final Bus mBus = MainActivity.getBusInstance();
+        mBus.post(new OttoStartLoadNewsEntry());
+        //caller.onLoadStart();
 
         RestClient.get().getNewsById(newsId, new Callback<FullNewsEntry>() {
             @Override
             public void success(FullNewsEntry news, Response response) {
-
-                caller.onLoadFinished(news);
+                mBus.post(new OttoFinishLoadNewsEntry(news));
+                //caller.onLoadFinished(news);
                 REST_CLIENT_LOGGER.trace("News entry " + news.getId() + " downloaded from server");
             }
 
@@ -98,7 +113,8 @@ public final class RestClient {
             public void failure(RetrofitError error) {
                 REST_CLIENT_LOGGER.trace("Error occurred while downloading news by Id", error);
                 Error restClientError = inspectError(error);
-                caller.onLoadFailed(restClientError);
+                mBus.post(new OttoFailLoadNewsEntry(restClientError));
+                //caller.onLoadFailed(restClientError);
             }
         });
     }

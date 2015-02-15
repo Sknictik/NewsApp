@@ -11,7 +11,12 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android_news.newsapp.R;
@@ -115,8 +120,7 @@ public class NavigationDrawerFragment extends Fragment {
                 this.getResources().getIntArray(R.array.newsHighlightColorsArray)));
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-
-
+        mDrawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         return mDrawerListView;
     }
 
@@ -249,7 +253,7 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.main, menu);
+            inflater.inflate(R.menu.empty, menu);
             showGlobalContextActionBar();
         }
 

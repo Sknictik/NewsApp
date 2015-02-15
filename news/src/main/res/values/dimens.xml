@@ -3,6 +3,8 @@
     <dimen name="small_padding">8dp</dimen>
     <dimen name="border_padding">1dp</dimen>
     <dimen name="divider_size">1dp</dimen>
+    <dimen name="nav_drawer_width">10dp</dimen>
+    <dimen name="error_text_size">13dp</dimen>
 
     <dimen name="news_row_height">120dp</dimen>
     <dimen name="news_row_height_large">160dp</dimen>

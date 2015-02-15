@@ -1,17 +1,18 @@
 package noveo.school.android.newsapp.retrofit.interfaces;
 
-import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
-import noveo.school.android.newsapp.retrofit.service.RestClient;
+import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNewsEntry;
+import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
 
 /**
- * Created by Arseniy Nazarov on 01.02.2015.
+ * Interface for the entity which wants a certain FullNewsEntry downloaded from server.
  */
 public interface RestClientCallbackForNewsEntry {
 
-    void onLoadFinished(FullNewsEntry news);
+    void onLoadFinished(OttoFinishLoadNewsEntry event);
 
-    void onLoadFailed(RestClient.Error reason);
+    void onLoadFailed(OttoFailLoadNewsEntry event);
 
-    void onLoadStart();
+    void onLoadStart(OttoStartLoadNewsEntry event);
 
 }
