@@ -102,6 +102,8 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+        // CR#2 you can define string array in strings.xml and get it Resources,getStringArray(...)
+        // <string-array name="titles"><item>@string/title_main</item></string-array>
         String[] titles = new String[]{
                 getString(R.string.title_main),
                 getString(R.string.title_politics),

@@ -7,6 +7,7 @@ import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
 /**
  * Interface for the entity which wants a certain FullNewsEntry downloaded from server.
  */
+// СR#2 remove unused classes
 public interface RestClientCallbackForNewsEntry {
 
     void onLoadFinished(OttoFinishLoadNewsEntry event);

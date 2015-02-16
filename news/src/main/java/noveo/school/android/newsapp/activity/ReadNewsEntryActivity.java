@@ -77,6 +77,7 @@ public class ReadNewsEntryActivity extends Activity {
 
         TextView dateTV = (TextView) findViewById(R.id.date_tv);
 
+        // CR#2 I see the same code in another classes. Please do some utility class for colors
         Resources res = getResources();
         TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
 

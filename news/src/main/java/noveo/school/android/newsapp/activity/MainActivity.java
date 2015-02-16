@@ -42,6 +42,9 @@ public class MainActivity extends Activity
     public static final String TITLE_KEY = "noveo.school.android.newsapp.MainActivity.TITLE";
     public static final String SHARED_PREFERENCE_NAME = "noveo.school.android.newsapp.NEWS_APP";
     private static final Logger NEWS_OVERVIEW_ACTIVITY_LOGGER = LoggerFactory.getLogger(MainActivity.class);
+    // CR#2 Your activity looks like a "God object". It knows too much.
+    // Activity and news state (current topic, cached news) aren't connected.
+    // Extract it into new class.
     //TODO CR#1 (DONE) It's bad practice. Please do singleton class which holds shared state (e.g. current topic, cached news)
     // And after that you don't need to pass the current topic in ReadNewsEntryActivity
     private static NewsTopic heading = NewsTopic.MAIN;
@@ -60,6 +63,7 @@ public class MainActivity extends Activity
         return heading;
     }
 
+    // CR#2 The same as above. Activity and Bus are different entities and they aren't connected. You should create class which holds instance of Bus
     public static Bus getBusInstance() {
         if (busInstance == null) {
             busInstance = new Bus();

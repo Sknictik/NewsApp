@@ -71,7 +71,7 @@ public final class RestClient {
         }
         return apiInstance;
     }
-
+    // CR#2 unused args
     public static void downloadNews(final RestClientCallbackForNewsOverview caller) {
         final Bus mBus = MainActivity.getBusInstance();
 
@@ -95,7 +95,7 @@ public final class RestClient {
             }
         });
     }
-
+    // CR#2 unused args
     public static void downloadNewsEntry(final RestClientCallbackForNewsEntry caller, String newsId) {
         final Bus mBus = MainActivity.getBusInstance();
         mBus.post(new OttoStartLoadNewsEntry());
