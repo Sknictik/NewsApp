@@ -25,7 +25,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
 
     private static final Logger NEWS_GRID_ADAPTER_LOGGER = LoggerFactory.getLogger(ArrayAdapterForNewsGrid.class);
     private final Format timeFormat = new SimpleDateFormat("dd.MM.yyyy | HH:mm", new Locale("ru"));
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
     private final int layoutId;
     private final List<ShortNewsEntry> news;
     private final Drawable faveIcon;
@@ -38,7 +38,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
                                    int topicColor) {
         super(context, layoutResource, news);
 
-        mInflater = (LayoutInflater) context.getSystemService(
+        inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
         layoutId = layoutResource;
@@ -52,7 +52,7 @@ public class ArrayAdapterForNewsGrid extends ArrayAdapter<ShortNewsEntry> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
-            convertView = mInflater.inflate(layoutId, null);
+            convertView = inflater.inflate(layoutId, null);
         }
 
         convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT,

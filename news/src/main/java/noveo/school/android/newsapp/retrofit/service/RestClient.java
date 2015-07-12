@@ -3,7 +3,8 @@ package noveo.school.android.newsapp.retrofit.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.otto.Bus;
-import noveo.school.android.newsapp.activity.MainActivity;
+
+import noveo.school.android.newsapp.ApplicationState;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
@@ -12,8 +13,7 @@ import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
 import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNewsEntry;
-import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
-import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.Callback;
@@ -60,29 +60,24 @@ public final class RestClient {
         apiInstance = restAdapter.create(NewsAPI.class);
     }
 
-    /*public static void shutdownAll() {
-        mExecutorService.shutdownNow();
-        apiInstance = null;
-    }*/
-
     private static NewsAPI get() {
         if (apiInstance == null) {
             setupRestClient();
         }
         return apiInstance;
     }
-    // CR#2 unused args
-    public static void downloadNews(final RestClientCallbackForNewsOverview caller) {
-        final Bus mBus = MainActivity.getBusInstance();
+    // (DONE) CR#2 unused args
+    public static void downloadNews() {
+        final Bus mBus = ApplicationState.getBusInstance();
 
-        mBus.post(new OttoStartLoadNews());
-        //caller.onLoadStart();
+        OttoStartLoadNews startLoadNewsEvent = new OttoStartLoadNews();
+        mBus.post(startLoadNewsEvent);
 
         RestClient.get().getAllNews(new Callback<ShortNewsEntry[]>() {
             @Override
             public void success(ShortNewsEntry[] news, Response response) {
-                mBus.post(new OttoFinishLoadNews(Arrays.asList(news)));
-                //caller.onLoadFinished(Arrays.asList(news));
+                OttoFinishLoadNews finishLoadNewsEvent = new OttoFinishLoadNews(Arrays.asList(news));
+                mBus.post(finishLoadNewsEvent);
                 REST_CLIENT_LOGGER.trace("News list downloaded from server");
             }
 
@@ -90,22 +85,22 @@ public final class RestClient {
             public void failure(RetrofitError error) {
                 REST_CLIENT_LOGGER.trace("Error occurred while downloading list of news", error);
                 Error restClientError = inspectError(error);
-                mBus.post(new OttoFailLoadNews(restClientError));
-                //caller.onLoadFailed(restClientError);
+                OttoFailLoadNews failLoadNewsEvent = new OttoFailLoadNews(restClientError);
+                mBus.post(failLoadNewsEvent);
             }
         });
     }
     // CR#2 unused args
-    public static void downloadNewsEntry(final RestClientCallbackForNewsEntry caller, String newsId) {
-        final Bus mBus = MainActivity.getBusInstance();
-        mBus.post(new OttoStartLoadNewsEntry());
-        //caller.onLoadStart();
+    public static void downloadNewsEntry(String newsId) {
+        final Bus mBus = ApplicationState.getBusInstance();
+        OttoStartLoadNewsEntry startLoadNewsEntry = new OttoStartLoadNewsEntry();
+        mBus.post(startLoadNewsEntry);
 
         RestClient.get().getNewsById(newsId, new Callback<FullNewsEntry>() {
             @Override
             public void success(FullNewsEntry news, Response response) {
-                mBus.post(new OttoFinishLoadNewsEntry(news));
-                //caller.onLoadFinished(news);
+                OttoFinishLoadNewsEntry finishLoadNewsEntry = new OttoFinishLoadNewsEntry(news);
+                mBus.post(finishLoadNewsEntry);
                 REST_CLIENT_LOGGER.trace("News entry " + news.getId() + " downloaded from server");
             }
 
@@ -113,8 +108,8 @@ public final class RestClient {
             public void failure(RetrofitError error) {
                 REST_CLIENT_LOGGER.trace("Error occurred while downloading news by Id", error);
                 Error restClientError = inspectError(error);
-                mBus.post(new OttoFailLoadNewsEntry(restClientError));
-                //caller.onLoadFailed(restClientError);
+                OttoFailLoadNewsEntry failLoadNewsEntry = new OttoFailLoadNewsEntry(restClientError);
+                mBus.post(failLoadNewsEntry);
             }
         });
     }

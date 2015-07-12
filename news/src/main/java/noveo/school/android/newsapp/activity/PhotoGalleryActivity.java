@@ -2,7 +2,8 @@ package noveo.school.android.newsapp.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.res.Resources;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,15 +11,25 @@ import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.MenuItem;
 import android.widget.TextView;
+
 import android_news.newsapp.R;
+import noveo.school.android.newsapp.ApplicationState;
+import noveo.school.android.newsapp.NewsUtils;
 import noveo.school.android.newsapp.fragment.NewsEntryFragment;
 import noveo.school.android.newsapp.view.adapter.FullScreenImageAdapter;
 
 /**
- * This activity starts when user touch images in ReadNewsEntryActivity. It shows them full screen sized.
+ * This activity starts when user touch images in ReadNewsEntryActivity.
+ * It shows them full screen sized.
  */
-// TODO CR#1(DONE) the same as MainActivity (move the key to class constant)
+//  CR#1(DONE) the same as MainActivity (move the key to class constant)
 public class PhotoGalleryActivity extends Activity {
+
+    public static Intent createIntent(Context context, int pos, String[] imagePaths, String caption) {
+        return new Intent(context, PhotoGalleryActivity.class).putExtra(NewsEntryFragment.POSITION_PARAM_KEY, pos)
+                .putExtra(NewsEntryFragment.IMAGE_PATHS_PARAM_KEY, imagePaths)
+                .putExtra(NewsEntryFragment.CAPTION_PARAM_KEY, caption);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +43,16 @@ public class PhotoGalleryActivity extends Activity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new FullScreenImageAdapter(this,
                 imagePaths));
-        // TODO CR#1 (DONE) extract hardcoded strings into xml resources
+        //  CR#1 (DONE) extract hardcoded strings into xml resources
         // And use string formatting (getString(int resId, Object... formatArgs))
         String actionBarTitle = getString(R.string.image_count_title, pos + 1, imagePaths.length);
         ActionBar actionBar = getActionBar();
         actionBar.setTitle(actionBarTitle);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Resources res = getResources();
-        TypedArray colors = res.obtainTypedArray(R.array.newsActionBarColorsArray);
-        int topicNum = MainActivity.getCurrentTopic().ordinal();
+
+        TypedArray colors = NewsUtils.getTypedArray(getResources(), R.array.newsActionBarColorsArray);
+        int topicNum = ApplicationState.getCurrentTopic().ordinal();
         final int color = colors.getColor(topicNum, 0);
         colors.recycle();
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
@@ -54,7 +65,7 @@ public class PhotoGalleryActivity extends Activity {
 
             @Override
             public void onPageSelected(int i) {
-                // TODO CR#1 (DONE) the same
+                //  CR#1 (DONE) the same
                 String actionBarTitle = getString(R.string.image_count_title, i + 1, imagePaths.length);
                 getActionBar().setTitle(Html.fromHtml(actionBarTitle));
             }

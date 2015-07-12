@@ -13,37 +13,37 @@ import noveo.school.android.newsapp.view.CheckableLinearLayout;
 
 public class ArrayAdapterForNavigationDrawer extends ArrayAdapter<String> {
 
-    private final LayoutInflater mInflater;
+    private final LayoutInflater inflater;
 
-    private final int mViewResourceId;
-    private final int mTextViewResourceId;
+    private final int viewResourceId;
+    private final int textViewResourceId;
     private final int[] highlightColors;
     private final int[] titleColors;
-    private final String[] mTitles;
+    private final String[] titles;
 
     public ArrayAdapterForNavigationDrawer(Context context, int resource, int textViewResourceId,
                                            String[] titles, int[] titleColors, int[] highlightColors) {
         super(context, resource, textViewResourceId, titles);
 
-        mInflater = (LayoutInflater) context.getSystemService(
+        inflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
-        mViewResourceId = resource;
-        mTextViewResourceId = textViewResourceId;
+        viewResourceId = resource;
+        this.textViewResourceId = textViewResourceId;
         this.highlightColors = highlightColors;
         this.titleColors = titleColors;
-        mTitles = titles;
+        this.titles = titles;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
-            convertView = mInflater.inflate(mViewResourceId, null);
+            convertView = inflater.inflate(viewResourceId, null);
         }
 
-        TextView tv = (TextView) convertView.findViewById(mTextViewResourceId);
-        tv.setText(mTitles[position]);
+        TextView tv = (TextView) convertView.findViewById(textViewResourceId);
+        tv.setText(titles[position]);
 
         ((CheckableLinearLayout) convertView).setHighlightColor(highlightColors[position]);
 

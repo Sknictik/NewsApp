@@ -6,7 +6,8 @@ import android.os.Parcelable;
 import java.util.Date;
 
 /**
- * Common ancestor class for ShortNewsEntry and FullNewsEntry used to store data downloaded from server.
+ * Common ancestor class for ShortNewsEntry and FullNewsEntry
+ * used to store data downloaded from server.
  */
 public class NewsEntry implements Parcelable {
 
@@ -25,21 +26,13 @@ public class NewsEntry implements Parcelable {
     private Date pubDate;
     private String title;
     private String[] topics;
-    private boolean isFavouriteNews = false;
+    private boolean isFavouriteNews;
 
     protected NewsEntry(String id, Date pubDate, String title, String[] topics) {
         this.id = id;
         this.pubDate = pubDate;
         this.title = title;
         this.topics = topics;
-    }
-
-    protected NewsEntry(String id, Date pubDate, String title, String[] topics, boolean isFavouriteNews) {
-        this.id = id;
-        this.pubDate = pubDate;
-        this.title = title;
-        this.topics = topics;
-        this.isFavouriteNews = isFavouriteNews;
     }
 
     protected NewsEntry(Parcel in) {

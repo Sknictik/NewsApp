@@ -4,13 +4,13 @@ import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 public class OttoFailLoadNews {
 
-    private RestClient.Error mError;
+    private final RestClient.Error error;
 
     public OttoFailLoadNews(RestClient.Error error) {
-        mError = error;
+        this.error = error;
     }
 
     public RestClient.Error getError() {
-        return mError;
+        return error;
     }
 }

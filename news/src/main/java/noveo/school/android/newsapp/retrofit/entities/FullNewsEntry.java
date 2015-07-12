@@ -3,10 +3,9 @@ package noveo.school.android.newsapp.retrofit.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Date;
-
 /**
- * This object is an entity containing full information about single news entry downloaded from server.
+ * This object is an entity containing full information
+ * about single news entry downloaded from server.
  */
 public class FullNewsEntry extends NewsEntry implements Parcelable {
 
@@ -24,12 +23,6 @@ public class FullNewsEntry extends NewsEntry implements Parcelable {
     };
     private String[] images;
     private String html;
-
-    public FullNewsEntry(String id, String html, String[] images, Date pubDate, String title, String[] topics) {
-        super(id, pubDate, title, topics);
-        this.images = images;
-        this.html = html;
-    }
 
     protected FullNewsEntry(Parcel in) {
         super(in);

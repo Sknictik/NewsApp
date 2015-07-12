@@ -4,13 +4,13 @@ import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 
 public class OttoFinishLoadNewsEntry {
 
-    private FullNewsEntry mNewsEntry;
+    private final FullNewsEntry newsEntry;
 
     public OttoFinishLoadNewsEntry(FullNewsEntry newsEntry) {
-        mNewsEntry = newsEntry;
+        this.newsEntry = newsEntry;
     }
 
     public FullNewsEntry getNewsEntry() {
-        return mNewsEntry;
+        return newsEntry;
     }
 }

@@ -23,14 +23,13 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android_news.newsapp.R;
-import com.squareup.otto.Subscribe;
+
+import noveo.school.android.newsapp.ApplicationState;
+import noveo.school.android.newsapp.NewsTopic;
+import noveo.school.android.newsapp.NewsUtils;
 import noveo.school.android.newsapp.activity.MainActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
 import noveo.school.android.newsapp.retrofit.entities.ShortNewsEntry;
-import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNews;
-import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNews;
-import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNews;
-import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsOverview;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 import noveo.school.android.newsapp.view.adapter.ArrayAdapterForNewsGrid;
 
@@ -40,13 +39,12 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class NewsTopicFragment extends Fragment implements RestClientCallbackForNewsOverview {
+public class NewsTopicFragment extends Fragment {
 
-    public static final String NEWS_ENTRY_KEY = "noveo.school.android.newsapp.NewsTopicFragment.NEWS_ENTRY";
     private static final int READ_NEWS_ENTRY_REQUEST = 1;  // The request code
     private final List<ShortNewsEntry> topicNews = new ArrayList<>();
     private GridView gridView;
-    private SwipeRefreshLayout mPullToRefreshLayout;
+    private SwipeRefreshLayout pullToRefreshLayout;
 
     /**
      * Returns a new instance of this fragment.
@@ -58,7 +56,7 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RestClient.downloadNews((MainActivity) getActivity());
+        RestClient.downloadNews();
     }
 
     @Override
@@ -78,11 +76,11 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         }
 
         // Now find the PullToRefreshLayout to setup
-        mPullToRefreshLayout = (SwipeRefreshLayout) root;
-        mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        pullToRefreshLayout = (SwipeRefreshLayout) root;
+        pullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                RestClient.downloadNews(getThisInstance());
+                RestClient.downloadNews();
             }
         });
 
@@ -95,7 +93,7 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
         topicNews.clear();
 
-        final MainActivity.NewsTopic heading = MainActivity.getCurrentTopic();
+        final NewsTopic heading = ApplicationState.getCurrentTopic();
 
         for (ShortNewsEntry entry : newsList) {
             String[] topics = entry.getTopics();
@@ -122,8 +120,8 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         });
 
         Resources res = getResources();
-        TypedArray icons = res.obtainTypedArray(R.array.faveIcons);
-        TypedArray colors = res.obtainTypedArray(R.array.newsHighlightColorsArray);
+        TypedArray icons = NewsUtils.getTypedArray(res, R.array.faveIcons);
+        TypedArray colors = NewsUtils.getTypedArray(res, R.array.newsHighlightColorsArray);
 
         Drawable faveIcon = icons.getDrawable(heading.ordinal());
         final int topicColor = colors.getColor(heading.ordinal(), 0);
@@ -138,17 +136,17 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent readNewsIntent = ReadNewsEntryActivity.newIntent();
-                readNewsIntent.setClass(getActivity(), ReadNewsEntryActivity.class);
-                // TODO CR#1 (DONE?) Good practice when you build Intent in Activity which you need to show.
+                Intent readNewsIntent = ReadNewsEntryActivity.createIntent(getActivity(), topicNews.get(position));
+                //  CR#1 (DONE) Good practice when you build
+                // Intent in Activity which you need to show.
                 // It makes the code more readable.
                 // You should create static method in ReadNewsEntryActivity which create Intent
                 // (like newInstance method in fragments)
 
 
-                // TODO CR#1 (DONE) too enough parameters. please make topicNews as Serializable or Parcelable
+                //  CR#1 (DONE) too enough parameters. please make
+                // topicNews as Serializable or Parcelable
                 // and pass just one object to the activity
-                readNewsIntent.putExtra(NEWS_ENTRY_KEY, topicNews.get(position));
                 startActivityForResult(readNewsIntent, READ_NEWS_ENTRY_REQUEST);
             }
         });
@@ -173,31 +171,9 @@ public class NewsTopicFragment extends Fragment implements RestClientCallbackFor
         }
     }
 
-    @Override
-    @Subscribe
-    public void onLoadFinished(OttoFinishLoadNews event) {
-        if (mPullToRefreshLayout.isRefreshing()) {
-            mPullToRefreshLayout.setRefreshing(false);
+    public void cancelPullToRefreshLayoutRefresh() {
+        if (pullToRefreshLayout.isRefreshing()) {
+            pullToRefreshLayout.setRefreshing(false);
         }
-        ((MainActivity) getActivity()).onLoadFinished(event);
-    }
-
-    @Override
-    @Subscribe
-    public void onLoadFailed(OttoFailLoadNews event) {
-        if (mPullToRefreshLayout.isRefreshing()) {
-            mPullToRefreshLayout.setRefreshing(false);
-        }
-        ((MainActivity) getActivity()).onLoadFailed(event);
-    }
-
-    @Override
-    @Subscribe
-    public void onLoadStart(OttoStartLoadNews event) {
-        ((MainActivity) getActivity()).onLoadStart(event);
-    }
-
-    private NewsTopicFragment getThisInstance() {
-        return NewsTopicFragment.this;
     }
 }

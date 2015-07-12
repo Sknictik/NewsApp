@@ -22,4 +22,12 @@
 
     <string name="image_count_title">Фото %1$s из %2$s</string>
 
+    <string-array name="titles">
+        <item>@string/title_main</item>
+        <item>@string/title_politics</item>
+        <item>@string/title_tech</item>
+        <item>@string/title_culture</item>
+        <item>@string/title_sports</item>
+    </string-array>
+
 </resources>

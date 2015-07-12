@@ -9,34 +9,42 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android_news.newsapp.R;
+
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
-import noveo.school.android.newsapp.activity.MainActivity;
+
+import android_news.newsapp.R;
+import noveo.school.android.newsapp.ApplicationState;
 import noveo.school.android.newsapp.activity.PhotoGalleryActivity;
 import noveo.school.android.newsapp.activity.ReadNewsEntryActivity;
 import noveo.school.android.newsapp.retrofit.entities.FullNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoFailLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoFinishLoadNewsEntry;
 import noveo.school.android.newsapp.retrofit.events.OttoStartLoadNewsEntry;
-import noveo.school.android.newsapp.retrofit.interfaces.RestClientCallbackForNewsEntry;
 import noveo.school.android.newsapp.retrofit.service.RestClient;
 
 /**
  * This fragment displays news description and images related
  * to a single news entry. It is used in ReadNewsEntryActivity.
  */
-public class NewsEntryFragment extends Fragment implements RestClientCallbackForNewsEntry {
+public class NewsEntryFragment extends Fragment {
     public static final String CAPTION_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.CAPTION_PARAM";
     public static final String IMAGE_PATHS_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.IMAGE_PATHS_PARAM";
     public static final String POSITION_PARAM_KEY = "noveo.school.android.newsapp.NewsEntryFragment.POSITION_PARAM";
+    public static final String NEWS_ENTRY_PARCELABLE_PARAM_KEY =
+            "noveo.school.android.newsapp.ReadNewsEntryActivity.NEWS_ENTRY_PARCELABLE_PARAM";
+    private FullNewsEntry storedNewsEntry;
+    private String newsEntryId;
 
-    private FullNewsEntry storedNewsEntry = null;
-    private String newsEntryId = null;
-
-    // TODO (DONE) CR#1 the same as NewsEmptyFragment
-    public static NewsEntryFragment newInstance() {
-        return new NewsEntryFragment();
+    //  (DONE) CR#1 the same as NewsEmptyFragment
+    public static NewsEntryFragment newInstance(FullNewsEntry newsEntry, String newsTitle, String newsEntryId) {
+        NewsEntryFragment entryFragment = new NewsEntryFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(NEWS_ENTRY_PARCELABLE_PARAM_KEY, newsEntry);
+        bundle.putString(ReadNewsEntryActivity.NEWS_TITLE_PARAM_KEY, newsTitle);
+        bundle.putString(ReadNewsEntryActivity.NEWS_ENTRY_ID_PARAM_KEY, newsEntryId);
+        entryFragment.setArguments(bundle);
+        return entryFragment;
     }
 
     @Override
@@ -49,18 +57,17 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        MainActivity.getBusInstance().register(this);
+        ApplicationState.getBusInstance().register(this);
 
         if (newsEntryId == null) {
             newsEntryId = getArguments().getString(
                     ReadNewsEntryActivity.NEWS_ENTRY_ID_PARAM_KEY);
         }
         if (storedNewsEntry == null) {
-            storedNewsEntry = getArguments().getParcelable(
-                    ReadNewsEntryActivity.NEWS_ENTRY_PARCELABLE_PARAM_KEY);
+            storedNewsEntry = getArguments().getParcelable(NEWS_ENTRY_PARCELABLE_PARAM_KEY);
         }
         if (storedNewsEntry == null) {
-            RestClient.downloadNewsEntry(this, newsEntryId);
+            RestClient.downloadNewsEntry(newsEntryId);
         } else {
             onLoadFinished(new OttoFinishLoadNewsEntry(storedNewsEntry));
         }
@@ -68,11 +75,10 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
 
     @Override
     public void onDetach() {
-        MainActivity.getBusInstance().unregister(this);
+        ApplicationState.getBusInstance().unregister(this);
         super.onDestroy();
     }
 
-    @Override
     @Subscribe
     public void onLoadFinished(OttoFinishLoadNewsEntry event) {
         storedNewsEntry = event.getNewsEntry();
@@ -105,11 +111,8 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
                 photoView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent viewPhotoIntent = new Intent(getActivity(), PhotoGalleryActivity.class);
-                        viewPhotoIntent.putExtra(CAPTION_PARAM_KEY,
-                                getArguments().getString(ReadNewsEntryActivity.NEWS_TITLE_PARAM_KEY));
-                        viewPhotoIntent.putExtra(IMAGE_PATHS_PARAM_KEY, imageUrls);
-                        viewPhotoIntent.putExtra(POSITION_PARAM_KEY, (int) v.getTag());
+                        Intent viewPhotoIntent = PhotoGalleryActivity.createIntent(getActivity(), (int) v.getTag(),
+                                imageUrls, getArguments().getString(ReadNewsEntryActivity.NEWS_TITLE_PARAM_KEY));
                         startActivity(viewPhotoIntent);
                     }
                 });
@@ -131,13 +134,11 @@ public class NewsEntryFragment extends Fragment implements RestClientCallbackFor
         ((ReadNewsEntryActivity) getActivity()).onLoadFinished(storedNewsEntry);
     }
 
-    @Override
     @Subscribe
     public void onLoadFailed(OttoFailLoadNewsEntry event) {
         ((ReadNewsEntryActivity) getActivity()).onLoadFailed(event.getError());
     }
 
-    @Override
     @Subscribe
     public void onLoadStart(OttoStartLoadNewsEntry event) {
         ((ReadNewsEntryActivity) getActivity()).onLoadStart();

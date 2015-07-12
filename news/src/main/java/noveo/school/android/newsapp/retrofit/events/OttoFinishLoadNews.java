@@ -6,13 +6,13 @@ import java.util.List;
 
 public class OttoFinishLoadNews {
 
-    private List<ShortNewsEntry> mNews;
+    private final List<ShortNewsEntry> news;
 
     public OttoFinishLoadNews(List<ShortNewsEntry> news) {
-        mNews = news;
+        this.news = news;
     }
 
     public List<ShortNewsEntry> getNews() {
-        return mNews;
+        return news;
     }
 }

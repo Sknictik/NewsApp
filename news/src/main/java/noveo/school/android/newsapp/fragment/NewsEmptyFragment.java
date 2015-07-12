@@ -10,18 +10,24 @@ import android_news.newsapp.R;
 
 /**
  * Empty fragment is shown when there is nothing to display
- * to user for whatever reason. It can be used in either MainActivity or ReadNewsEntryActivity.
+ * to user for whatever reason. It can be used in
+ * either MainActivity or ReadNewsEntryActivity.
  */
 public class NewsEmptyFragment extends Fragment {
 
     public static final String IS_BACKGROUND_WHITE_PARAM =
             "noveo.school.android.newsapp.ReadNewsEntryActivity.IS_BACKGROUND_WHITE_PARAM";
 
-    private boolean isBackgroundWhite = false;
+    private boolean isBackgroundWhite;
 
-    // TODO CR#1 (DONE) use Fragment.setArguments(Bundle) for passing args into fragment
-    public static NewsEmptyFragment newInstance() {
-        return new NewsEmptyFragment();
+    //  CR#1 (DONE) use Fragment.setArguments(Bundle) for passing args into fragment
+    public static NewsEmptyFragment newInstance(boolean isBackgroundWhite) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(NewsEmptyFragment.IS_BACKGROUND_WHITE_PARAM, isBackgroundWhite);
+        NewsEmptyFragment emptyFragment = new NewsEmptyFragment();
+        emptyFragment.setArguments(bundle);
+
+        return emptyFragment;
     }
 
     @Override
@@ -38,11 +44,6 @@ public class NewsEmptyFragment extends Fragment {
             root.setBackgroundResource(R.drawable.bg_empty);
         }
         return root;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-
     }
 
 }
